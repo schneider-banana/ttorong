@@ -25,8 +25,8 @@ interface TimeFieldProps {
   showQuick?: boolean;
 }
 
-/** 스테퍼: 누를 때마다 표시된 시간에서 N분씩 뺌 */
-const STEP_MINUTES = [1, 5, 10];
+/** 스테퍼: 누를 때마다 표시된 시간에서 N분씩 더하고 뺌 */
+const STEP_MINUTES = [-10, -5, -1, 1, 5, 10];
 
 /** "HH:MM" → Date (오늘 날짜 기준) */
 function hhmmToDate(hhmm: string): Date {
@@ -72,10 +72,10 @@ export function TimeField({
     }
   };
 
-  /** 스테퍼: 현재 표시된 시간에서 N분 뺌 (여러 번 누르면 누적) */
-  const stepBack = (minutes: number) => {
+  /** 스테퍼: 현재 표시된 시간에서 N분 더하고 뺌 (여러 번 누르면 누적) */
+  const stepBy = (minutes: number) => {
     const base = value ? hhmmToDate(value) : new Date();
-    onChange(dateToHHMM(new Date(base.getTime() - minutes * 60000)));
+    onChange(dateToHHMM(new Date(base.getTime() + minutes * 60000)));
   };
 
   return (
@@ -115,9 +115,11 @@ export function TimeField({
                 styles.chip,
                 pressed && styles.pressed,
               ]}
-              onPress={() => stepBack(m)}
+              onPress={() => stepBy(m)}
             >
-              <Text style={styles.chipText}>-{m}분</Text>
+              <Text style={styles.chipText}>
+                {m > 0 ? `+${m}분` : `${m}분`}
+              </Text>
             </Pressable>
           ))}
         </View>
