@@ -86,5 +86,15 @@ service cloud.firestore {
       allow get, create, update: if signedIn() && request.auth.uid == memberId;
       allow list, delete: if false;
     }
+
+    // ---- 에러 리포트 (앱 자동 보고용) ----
+    match /errorReports/{reportId} {
+      // 로그인한 사용자는 보고 생성 가능 (개발자가 콘솔에서 확인)
+      allow create: if signedIn();
+      // 목록/개별 조회는 로그인 사용자 허용 (개발자 확인용)
+      // 실제 운영 시에는 관리자만 읽도록 강화할 것
+      allow get, list: if signedIn();
+      allow update, delete: if false;
+    }
   }
 }
