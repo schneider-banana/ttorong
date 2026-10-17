@@ -92,11 +92,8 @@ export default function HomeScreen() {
           <Text style={styles.headerDate}>{formatDateLabel(today)}</Text>
         </View>
 
-        {/* 2. 상태 요약 카드: 마지막 수유 + 오늘 기록 건수 */}
-        <TodaySummaryCard
-          lastFeeding={log.lastFeeding}
-          entryCount={log.todayEntries.length}
-        />
+        {/* 2. 상태 요약 카드: 마지막 수유 + 오늘 통계 */}
+        <TodaySummaryCard entries={log.todayEntries} />
 
         {/* 3. 빠른 기록 한 줄: 수유/수면/기저귀/체온 + 음성 마이크 */}
         <View style={styles.quickRow}>
