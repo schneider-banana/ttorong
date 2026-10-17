@@ -308,6 +308,19 @@ function withoutId<T extends { id: string }>(value: T): Omit<T, "id"> {
   return copy;
 }
 
+/**
+ * Firestore 쓰기 전 undefined 필드 제거.
+ * Firestore는 undefined 값을 거부하므로, 선택 입력(메모 등)이 비어 있을 때
+ * addDoc/setDoc/updateDoc이 실패하는 것을 방지합니다.
+ */
+function stripUndefined<T extends Record<string, unknown>>(value: T): T {
+  const copy = { ...value };
+  for (const key of Object.keys(copy)) {
+    if (copy[key] === undefined) delete copy[key];
+  }
+  return copy;
+}
+
 /** 스냅샷을 id 포함 객체로 변환 (문서 없으면 null) */
 function withId<T>(
   snap: QueryDocumentSnapshot | DocumentSnapshot
@@ -399,7 +412,7 @@ export class FirestoreDatabase implements BabyLogDatabase {
   async createChild(child: Omit<Child, "id">): Promise<Child> {
     const ref = await addDoc(
       this.childrenCol(this.requireFamilyId()),
-      child as Omit<Child, "id">
+      stripUndefined(child as Record<string, unknown>)
     );
     return { ...child, id: ref.id };
   }
@@ -409,7 +422,7 @@ export class FirestoreDatabase implements BabyLogDatabase {
     patch: Partial<Omit<Child, "id">>
   ): Promise<Child> {
     const ref = doc(this.fs, "families", this.requireFamilyId(), "children", id);
-    await updateDoc(ref, { ...patch });
+    await updateDoc(ref, stripUndefined({ ...patch }));
     const updated = await getDoc(ref);
     const result = withId<Child>(updated);
     if (!result) throw new Error(`아이를 찾을 수 없습니다: ${id}`);
@@ -484,12 +497,12 @@ export class FirestoreDatabase implements BabyLogDatabase {
   }
 
   async createMember(member: Omit<Member, "id">): Promise<Member> {
-    const ref = await addDoc(this.membersCol(), withoutId({ ...member, id: "" }));
+    const ref = await addDoc(this.membersCol(), stripUndefined(withoutId({ ...member, id: "" })));
     return { ...member, id: ref.id };
   }
 
   async createMemberWithId(member: Member): Promise<Member> {
-    await setDoc(doc(this.fs, "members", member.id), withoutId(member));
+    await setDoc(doc(this.fs, "members", member.id), stripUndefined(withoutId(member)));
     return member;
   }
 
@@ -514,7 +527,7 @@ export class FirestoreDatabase implements BabyLogDatabase {
   }
 
   async createEvent(event: Omit<CalendarEvent, "id">): Promise<CalendarEvent> {
-    const ref = await addDoc(this.eventsCol(event.familyId), withoutId({ ...event, id: "" }));
+    const ref = await addDoc(this.eventsCol(event.familyId), stripUndefined(withoutId({ ...event, id: "" })));
     return { ...event, id: ref.id };
   }
 
@@ -523,7 +536,7 @@ export class FirestoreDatabase implements BabyLogDatabase {
     patch: Partial<Omit<CalendarEvent, "id" | "familyId">>
   ): Promise<CalendarEvent> {
     const ref = doc(this.fs, "families", this.requireFamilyId(), "events", id);
-    await updateDoc(ref, { ...patch });
+    await updateDoc(ref, stripUndefined({ ...patch }));
     const updated = await getDoc(ref);
     const result = withId<CalendarEvent>(updated);
     if (!result) throw new Error(`일정을 찾을 수 없습니다: ${id}`);
@@ -560,7 +573,7 @@ export class FirestoreDatabase implements BabyLogDatabase {
   ): Promise<BabyLogEntry> {
     const ref = await addDoc(
       this.logEntriesCol(entry.familyId),
-      withoutId({ ...entry, id: "" })
+      stripUndefined(withoutId({ ...entry, id: "" }))
     );
     return { ...entry, id: ref.id };
   }
@@ -594,7 +607,7 @@ export class FirestoreDatabase implements BabyLogDatabase {
   ): Promise<GrowthRecord> {
     const ref = await addDoc(
       this.growthRecordsCol(record.familyId),
-      withoutId({ ...record, id: "" })
+      stripUndefined(withoutId({ ...record, id: "" }))
     );
     return { ...record, id: ref.id };
   }
