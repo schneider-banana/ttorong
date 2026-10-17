@@ -166,6 +166,7 @@ export default function HomeScreen() {
             <EventList
               date={today}
               events={todayEvents}
+              showDateTitle={false}
               onDeleteEvent={(id) => void handleDeleteEvent(id)}
             />
           )}

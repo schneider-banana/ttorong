@@ -13,6 +13,8 @@ interface EventListProps {
   events: CalendarEvent[];
   /** 일정 삭제 요청 */
   onDeleteEvent: (id: string) => void;
+  /** 날짜 타이틀 표시 여부 (기본 true — 홈처럼 날짜를 이미 보여주는 화면에서는 false) */
+  showDateTitle?: boolean;
 }
 
 /** 날짜를 "10월 17일 (토)" 형식으로 표시 */
@@ -33,7 +35,12 @@ function formatTime(time?: string): string {
   return `${period} ${hour12}:${String(min).padStart(2, "0")}`;
 }
 
-export function EventList({ date, events, onDeleteEvent }: EventListProps) {
+export function EventList({
+  date,
+  events,
+  onDeleteEvent,
+  showDateTitle = true,
+}: EventListProps) {
   const confirmDelete = (event: CalendarEvent) => {
     Alert.alert("일정 삭제", `「${event.title}」 일정을 삭제할까요?`, [
       { text: "취소", style: "cancel" },
@@ -47,7 +54,9 @@ export function EventList({ date, events, onDeleteEvent }: EventListProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.dateTitle}>{formatDateLabel(date)}</Text>
+      {showDateTitle ? (
+        <Text style={styles.dateTitle}>{formatDateLabel(date)}</Text>
+      ) : null}
 
       {events.length === 0 ? (
         <View style={styles.emptyBox}>
