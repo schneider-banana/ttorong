@@ -21,6 +21,8 @@ interface VoiceLogButtonProps {
   /** "끝" 명령이 유효한지 판단용 (진행 중인 수유/수면) */
   activeFeeding?: BabyLogEntry | null;
   activeSleep?: BabyLogEntry | null;
+  /** true면 작은 마이크 아이콘 버튼만 표시 (홈 빠른 기록 줄용) */
+  compact?: boolean;
   onStartFeeding: () => void;
   onEndFeeding: () => void;
   onStartSleep: () => void;
@@ -33,6 +35,7 @@ export function VoiceLogButton({
   disabled = false,
   activeFeeding = null,
   activeSleep = null,
+  compact = false,
   onStartFeeding,
   onEndFeeding,
   onStartSleep,
@@ -126,6 +129,24 @@ export function VoiceLogButton({
 
   const inactive = disabled || listening;
 
+  // compact 모드: 작은 마이크 아이콘 버튼 (빠른 기록 줄의 5번째 버튼)
+  if (compact) {
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          styles.compactButton,
+          listening && styles.listeningButton,
+          (pressed || disabled) && styles.pressed,
+        ]}
+        disabled={disabled}
+        onPress={handlePress}
+        accessibilityLabel="음성으로 기록"
+      >
+        <Text style={styles.compactIcon}>🎙️</Text>
+      </Pressable>
+    );
+  }
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -162,6 +183,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 20,
     gap: 14,
+  },
+  // compact 모드: 빠른 기록 줄의 5번째 버튼 (작은 마이크)
+  compactButton: {
+    width: 56,
+    minHeight: 78,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#eee",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  compactIcon: {
+    fontSize: 26,
   },
   listeningButton: {
     borderColor: "#FF8C42",

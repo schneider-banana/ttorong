@@ -27,6 +27,8 @@ interface QuickLogButtonsProps {
   activeSleep: BabyLogEntry | null;
   /** 저장 작업 중이면 버튼 비활성화 */
   disabled?: boolean;
+  /** true면 한 줄 컴팩트 레이아웃 (홈 상단 고정 영역용) */
+  compact?: boolean;
   onStartFeeding: () => void;
   onEndFeeding: () => void;
   onStartSleep: () => void;
@@ -56,6 +58,7 @@ export function QuickLogButtons({
   activeFeeding,
   activeSleep,
   disabled = false,
+  compact = false,
   onStartFeeding,
   onEndFeeding,
   onStartSleep,
@@ -70,6 +73,13 @@ export function QuickLogButtons({
 
   const feedingActive = activeFeeding !== null;
   const sleepActive = activeSleep !== null;
+
+  // compact 모드면 한 줄 레이아웃용 스타일로 전환
+  const gridStyle = compact ? styles.compactGrid : styles.grid;
+  const btnStyle = compact ? styles.compactButton : styles.bigButton;
+  const iconStyle = compact ? styles.compactIcon : styles.icon;
+  const titleStyle = compact ? styles.compactTitle : styles.buttonTitle;
+  const subStyle = compact ? styles.compactSub : styles.buttonSub;
 
   const handleDiaperSelect = (kind: DiaperKind) => {
     setDiaperSheetOpen(false);
@@ -89,23 +99,23 @@ export function QuickLogButtons({
 
   return (
     <View>
-      <View style={styles.grid}>
+      <View style={gridStyle}>
         {/* 수유 */}
         <Pressable
           style={({ pressed }) => [
-            styles.bigButton,
+            btnStyle,
             feedingActive && styles.activeButton,
             (pressed || disabled) && styles.pressed,
           ]}
           disabled={disabled}
           onPress={feedingActive ? onEndFeeding : onStartFeeding}
         >
-          <Text style={styles.icon}>🍼</Text>
-          <Text style={[styles.buttonTitle, feedingActive && styles.activeText]}>
+          <Text style={iconStyle}>🍼</Text>
+          <Text style={[titleStyle, feedingActive && styles.activeText]}>
             {feedingActive ? "수유 종료" : "수유 시작"}
           </Text>
           {feedingActive && (
-            <Text style={[styles.buttonSub, styles.activeText]}>
+            <Text style={[subStyle, styles.activeText]}>
               {formatDuration(minutesSince(activeFeeding.startedAt, now))}째
             </Text>
           )}
@@ -114,19 +124,19 @@ export function QuickLogButtons({
         {/* 수면 */}
         <Pressable
           style={({ pressed }) => [
-            styles.bigButton,
+            btnStyle,
             sleepActive && styles.activeButton,
             (pressed || disabled) && styles.pressed,
           ]}
           disabled={disabled}
           onPress={sleepActive ? onEndSleep : onStartSleep}
         >
-          <Text style={styles.icon}>😴</Text>
-          <Text style={[styles.buttonTitle, sleepActive && styles.activeText]}>
+          <Text style={iconStyle}>😴</Text>
+          <Text style={[titleStyle, sleepActive && styles.activeText]}>
             {sleepActive ? "수면 종료" : "수면 시작"}
           </Text>
           {sleepActive && (
-            <Text style={[styles.buttonSub, styles.activeText]}>
+            <Text style={[subStyle, styles.activeText]}>
               {formatDuration(minutesSince(activeSleep.startedAt, now))}째
             </Text>
           )}
@@ -134,30 +144,24 @@ export function QuickLogButtons({
 
         {/* 기저귀 */}
         <Pressable
-          style={({ pressed }) => [
-            styles.bigButton,
-            (pressed || disabled) && styles.pressed,
-          ]}
+          style={({ pressed }) => [btnStyle, (pressed || disabled) && styles.pressed]}
           disabled={disabled}
           onPress={() => setDiaperSheetOpen(true)}
         >
-          <Text style={styles.icon}>🧷</Text>
-          <Text style={styles.buttonTitle}>기저귀</Text>
-          <Text style={styles.buttonSub}>탭 한 번에 기록</Text>
+          <Text style={iconStyle}>🧷</Text>
+          <Text style={titleStyle}>기저귀</Text>
+          {!compact && <Text style={subStyle}>탭 한 번에 기록</Text>}
         </Pressable>
 
         {/* 체온 */}
         <Pressable
-          style={({ pressed }) => [
-            styles.bigButton,
-            (pressed || disabled) && styles.pressed,
-          ]}
+          style={({ pressed }) => [btnStyle, (pressed || disabled) && styles.pressed]}
           disabled={disabled}
           onPress={() => setTempModalOpen(true)}
         >
-          <Text style={styles.icon}>🌡️</Text>
-          <Text style={styles.buttonTitle}>체온</Text>
-          <Text style={styles.buttonSub}>숫자 입력 후 저장</Text>
+          <Text style={iconStyle}>🌡️</Text>
+          <Text style={titleStyle}>체온</Text>
+          {!compact && <Text style={subStyle}>숫자 입력 후 저장</Text>}
         </Pressable>
       </View>
 
@@ -258,6 +262,37 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 12,
     marginBottom: 20,
+  },
+  // compact 모드: 한 줄 4버튼 (홈 상단 고정 영역용)
+  compactGrid: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  compactButton: {
+    flex: 1,
+    minHeight: 78,
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#eee",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 2,
+  },
+  compactIcon: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  compactTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#333",
+  },
+  compactSub: {
+    fontSize: 11,
+    color: "#999",
+    marginTop: 2,
   },
   bigButton: {
     flexBasis: "48%",
