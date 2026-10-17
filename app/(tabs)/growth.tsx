@@ -16,6 +16,7 @@ import {
 import * as Print from "expo-print";
 import { useCurrentChild } from "../../src/hooks/useCurrentChild";
 import { useGrowth } from "../../src/hooks/useGrowth";
+import { GrowthChart } from "../../src/components/GrowthChart";
 import { buildGrowthReportHtml } from "../../src/lib/report";
 import { todayString } from "../../src/lib/vaccination";
 import { colors } from "../../src/theme";
@@ -154,6 +155,12 @@ export default function GrowthScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Text style={styles.title}>성장</Text>
+
+        {/* WHO 성장 곡선 */}
+        <GrowthChart
+          records={growth.records}
+          birthDate={child?.birthDate ?? null}
+        />
 
         {/* 측정 입력 폼 */}
         <View style={styles.card}>
