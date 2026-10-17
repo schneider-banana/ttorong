@@ -3,6 +3,7 @@
 // - 1분마다 경과시간 자동 갱신
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../../theme";
 import type { BabyLogEntry } from "../../types";
 import {
   feedingReferenceTime,
@@ -56,10 +57,10 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFF8F0",
+    backgroundColor: colors.primarySoft,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#FFE4C4",
+    borderColor: colors.border,
     paddingHorizontal: 14,
     paddingVertical: 12,
     minHeight: 64,
@@ -72,17 +73,17 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: "700",
-    color: "#333",
+    color: colors.text,
   },
   divider: {
     width: 1,
     height: 24,
-    backgroundColor: "#FFE4C4",
+    backgroundColor: colors.border,
     marginHorizontal: 12,
   },
   countText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#B5651D",
+    color: colors.primaryDeep,
   },
 });

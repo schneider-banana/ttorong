@@ -24,6 +24,7 @@ import type { CalendarEvent } from "../../src/types";
 import { EventForm, type EventFormValue } from "../../src/components/calendar/EventForm";
 import { EventList } from "../../src/components/calendar/EventList";
 import { MonthGrid } from "../../src/components/calendar/MonthGrid";
+import { colors } from "../../src/theme";
 import {
   monthRange,
   toDateString,
@@ -294,7 +295,7 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.background,
   },
   scroll: {
     flex: 1,
@@ -304,12 +305,12 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 8,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#F5EDE0",
     marginVertical: 12,
   },
   loadingText: {
     textAlign: "center",
-    color: "#9ca3af",
+    color: colors.textSoft,
     fontSize: 13,
     paddingVertical: 8,
   },
@@ -320,18 +321,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 12,
   },
   emptyText: {
     fontSize: 14,
-    color: "#9ca3af",
+    color: colors.textSoft,
     marginBottom: 12,
   },
   vaxRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#FFF6EA",
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -340,10 +342,11 @@ const styles = StyleSheet.create({
   vaxTitle: {
     fontSize: 15,
     fontWeight: "600",
+    color: colors.text,
   },
   vaxDate: {
     fontSize: 13,
-    color: "#868e96",
+    color: colors.textSoft,
     marginTop: 2,
   },
   vaxRight: {
@@ -352,15 +355,15 @@ const styles = StyleSheet.create({
   vaxDday: {
     fontSize: 15,
     fontWeight: "700",
-    color: "#2563eb",
+    color: colors.primary,
   },
   vaxStatus: {
     fontSize: 12,
-    color: "#868e96",
+    color: colors.textSoft,
     marginTop: 2,
   },
   syncButton: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: "center",
@@ -381,7 +384,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -397,6 +400,6 @@ const styles = StyleSheet.create({
   },
   modalSafe: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.background,
   },
 });

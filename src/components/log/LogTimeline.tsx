@@ -1,6 +1,7 @@
 // 오늘의 기록 타임라인
 // - 시간순(최신순) 목록, 항목별 삭제 가능
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { colors } from "../../theme";
 import type { BabyLogEntry, BabyLogType } from "../../types";
 import {
   formatClockTime,
@@ -19,10 +20,10 @@ interface LogTimelineProps {
 
 /** 로그 종류별 메타 정보 */
 const TYPE_META: Record<BabyLogType, { icon: string; label: string; color: string }> = {
-  feeding: { icon: "🍼", label: "수유", color: "#FFF3E8" },
-  sleep: { icon: "😴", label: "수면", color: "#EDEBFF" },
-  diaper: { icon: "🧷", label: "기저귀", color: "#E8F7FF" },
-  temperature: { icon: "🌡️", label: "체온", color: "#FFEFEF" },
+  feeding: { icon: "🍼", label: "수유", color: colors.tint.feeding },
+  sleep: { icon: "😴", label: "수면", color: colors.tint.sleep },
+  diaper: { icon: "🧷", label: "기저귀", color: colors.tint.diaper },
+  temperature: { icon: "🌡️", label: "체온", color: colors.tint.temperature },
 };
 
 /** 항목별 상세 문구 (예: "오전 8:30 · 35분간", "소변", "36.5℃") */
@@ -61,7 +62,7 @@ export function LogTimeline({ entries, loading, onDelete }: LogTimelineProps) {
 
       {loading ? (
         <View style={styles.centerBox}>
-          <ActivityIndicator size="large" color="#FF8C42" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : entries.length === 0 ? (
         <View style={styles.emptyBox}>
@@ -75,9 +76,11 @@ export function LogTimeline({ entries, loading, onDelete }: LogTimelineProps) {
             return (
               <View
                 key={entry.id}
-                style={[styles.row, { backgroundColor: meta.color }]}
+                style={styles.row}
               >
-                <Text style={styles.rowIcon}>{meta.icon}</Text>
+                <View style={[styles.iconBadge, { backgroundColor: meta.color }]}>
+                  <Text style={styles.rowIcon}>{meta.icon}</Text>
+                </View>
                 <View style={styles.rowText}>
                   <Text style={styles.rowLabel}>{meta.label}</Text>
                   <Text style={styles.rowDetail}>{describeEntry(entry)}</Text>
@@ -106,7 +109,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 19,
     fontWeight: "700",
-    color: "#333",
+    color: colors.text,
     marginBottom: 12,
   },
   centerBox: {
@@ -114,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   emptyBox: {
-    backgroundColor: "#fafafa",
+    backgroundColor: "#FFF6EA",
     borderRadius: 16,
     paddingVertical: 28,
     alignItems: "center",
@@ -122,12 +125,12 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#888",
+    color: colors.textSoft,
     marginBottom: 6,
   },
   emptySub: {
     fontSize: 14,
-    color: "#aaa",
+    color: colors.inactive,
   },
   list: {
     gap: 10,
@@ -135,13 +138,23 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: 16,
     paddingVertical: 14,
     paddingHorizontal: 16,
     gap: 12,
   },
+  iconBadge: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   rowIcon: {
-    fontSize: 28,
+    fontSize: 26,
   },
   rowText: {
     flex: 1,
@@ -149,12 +162,12 @@ const styles = StyleSheet.create({
   rowLabel: {
     fontSize: 16,
     fontWeight: "700",
-    color: "#333",
+    color: colors.text,
     marginBottom: 2,
   },
   rowDetail: {
     fontSize: 14,
-    color: "#666",
+    color: colors.textSoft,
   },
   deleteButton: {
     width: 36,
@@ -166,7 +179,7 @@ const styles = StyleSheet.create({
   },
   deleteText: {
     fontSize: 15,
-    color: "#999",
+    color: colors.danger,
   },
   pressed: {
     opacity: 0.6,

@@ -18,6 +18,7 @@ import { TodaySummaryCard } from "../../src/components/log/TodaySummaryCard";
 import { VoiceLogButton } from "../../src/components/log/VoiceLogButton";
 import { EventList } from "../../src/components/calendar/EventList";
 import { todayString } from "../../src/components/calendar/eventKind";
+import { colors } from "../../src/theme";
 import { useBabyLog } from "../../src/hooks/useBabyLog";
 import { useDatabase } from "../../src/hooks/useDatabase";
 import { useAuth } from "../../src/hooks/useAuth";
@@ -179,7 +180,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
   // 페이지 전체는 고정 레이아웃 (스크롤 없음)
   container: {
@@ -196,12 +197,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 22,
     fontWeight: "800",
-    color: "#333",
+    color: colors.text,
     marginRight: 8,
   },
   headerDate: {
     fontSize: 14,
-    color: "#868E96",
+    color: colors.textSoft,
   },
   // 3. 빠른 기록 한 줄 (약 78pt)
   quickRow: {
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
   // 4. 세그먼트 (약 46pt)
   segment: {
     flexDirection: "row",
-    backgroundColor: "#F1F3F5",
+    backgroundColor: "#F5EDE0",
     borderRadius: 12,
     padding: 4,
     marginBottom: 8,
@@ -239,10 +240,10 @@ const styles = StyleSheet.create({
   segmentLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#868E96",
+    color: colors.textSoft,
   },
   segmentLabelActive: {
-    color: "#333",
+    color: colors.text,
     fontWeight: "700",
   },
   // 5. 콘텐츠 영역: 남은 공간 전부, 내부 스크롤만

@@ -6,6 +6,7 @@
 //   지금은 MockSpeechRecognitionProvider를 사용 (src/lib/speech.ts 참고).
 import { useEffect, useRef, useState } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { colors } from "../../theme";
 import { MockSpeechRecognitionProvider } from "../../lib/speech";
 import {
   describeCommand,
@@ -175,10 +176,10 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: colors.card,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.border,
     paddingVertical: 16,
     paddingHorizontal: 20,
     marginBottom: 20,
@@ -188,10 +189,10 @@ const styles = StyleSheet.create({
   compactButton: {
     width: 56,
     minHeight: 78,
-    backgroundColor: "#fff",
+    backgroundColor: colors.card,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -199,8 +200,8 @@ const styles = StyleSheet.create({
     fontSize: 26,
   },
   listeningButton: {
-    borderColor: "#FF8C42",
-    backgroundColor: "#FFF6EF",
+    borderColor: colors.primary,
+    backgroundColor: colors.primarySoft,
   },
   pressed: {
     opacity: 0.6,
@@ -214,19 +215,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#333",
+    color: colors.text,
   },
   listeningText: {
-    color: "#FF8C42",
+    color: colors.primary,
   },
   sub: {
     fontSize: 13,
-    color: "#999",
+    color: colors.textSoft,
     marginTop: 2,
   },
   hint: {
     fontSize: 24,
-    color: "#ccc",
+    color: colors.inactive,
     fontWeight: "600",
   },
 });

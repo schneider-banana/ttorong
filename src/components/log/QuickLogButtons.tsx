@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import type { BabyLogEntry } from "../../types";
+import { colors } from "../../theme";
 import {
   formatDuration,
   minutesSince,
@@ -104,6 +105,7 @@ export function QuickLogButtons({
         <Pressable
           style={({ pressed }) => [
             btnStyle,
+            styles.kindTintFeeding,
             feedingActive && styles.activeButton,
             (pressed || disabled) && styles.pressed,
           ]}
@@ -125,6 +127,7 @@ export function QuickLogButtons({
         <Pressable
           style={({ pressed }) => [
             btnStyle,
+            styles.kindTintSleep,
             sleepActive && styles.activeButton,
             (pressed || disabled) && styles.pressed,
           ]}
@@ -144,7 +147,11 @@ export function QuickLogButtons({
 
         {/* 기저귀 */}
         <Pressable
-          style={({ pressed }) => [btnStyle, (pressed || disabled) && styles.pressed]}
+          style={({ pressed }) => [
+            btnStyle,
+            styles.kindTintDiaper,
+            (pressed || disabled) && styles.pressed,
+          ]}
           disabled={disabled}
           onPress={() => setDiaperSheetOpen(true)}
         >
@@ -155,7 +162,11 @@ export function QuickLogButtons({
 
         {/* 체온 */}
         <Pressable
-          style={({ pressed }) => [btnStyle, (pressed || disabled) && styles.pressed]}
+          style={({ pressed }) => [
+            btnStyle,
+            styles.kindTintTemperature,
+            (pressed || disabled) && styles.pressed,
+          ]}
           disabled={disabled}
           onPress={() => setTempModalOpen(true)}
         >
@@ -220,7 +231,7 @@ export function QuickLogButtons({
                 onChangeText={setTempInput}
                 keyboardType="decimal-pad"
                 placeholder="36.5"
-                placeholderTextColor="#aaa"
+                placeholderTextColor={colors.inactive}
                 autoFocus
                 returnKeyType="done"
                 onSubmitEditing={handleTempSave}
@@ -271,10 +282,7 @@ const styles = StyleSheet.create({
   compactButton: {
     flex: 1,
     minHeight: 78,
-    backgroundColor: "#fff",
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#eee",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 8,
@@ -287,29 +295,38 @@ const styles = StyleSheet.create({
   compactTitle: {
     fontSize: 13,
     fontWeight: "700",
-    color: "#333",
+    color: colors.text,
   },
   compactSub: {
     fontSize: 11,
-    color: "#999",
+    color: colors.textSoft,
     marginTop: 2,
   },
   bigButton: {
     flexBasis: "48%",
     flexGrow: 1,
     minHeight: 108,
-    backgroundColor: "#fff",
     borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#eee",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 18,
     paddingHorizontal: 8,
   },
+  // 기록 종류별 틴트 배경
+  kindTintFeeding: {
+    backgroundColor: colors.tint.feeding,
+  },
+  kindTintSleep: {
+    backgroundColor: colors.tint.sleep,
+  },
+  kindTintDiaper: {
+    backgroundColor: colors.tint.diaper,
+  },
+  kindTintTemperature: {
+    backgroundColor: colors.tint.temperature,
+  },
   activeButton: {
-    backgroundColor: "#FF8C42",
-    borderColor: "#FF8C42",
+    backgroundColor: colors.primary,
   },
   pressed: {
     opacity: 0.6,
@@ -321,11 +338,11 @@ const styles = StyleSheet.create({
   buttonTitle: {
     fontSize: 19,
     fontWeight: "700",
-    color: "#333",
+    color: colors.text,
   },
   buttonSub: {
     fontSize: 13,
-    color: "#999",
+    color: colors.textSoft,
     marginTop: 4,
   },
   activeText: {
@@ -338,7 +355,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   sheet: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.card,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 20,
@@ -350,10 +367,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 6,
-    color: "#333",
+    color: colors.text,
   },
   sheetOption: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#F5EDE0",
     borderRadius: 16,
     paddingVertical: 18,
     alignItems: "center",
@@ -361,7 +378,7 @@ const styles = StyleSheet.create({
   sheetOptionText: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#333",
+    color: colors.text,
   },
   sheetCancel: {
     borderRadius: 16,
@@ -371,7 +388,7 @@ const styles = StyleSheet.create({
   },
   sheetCancelText: {
     fontSize: 17,
-    color: "#999",
+    color: colors.textSoft,
   },
   // --- 체온 모달 ---
   modalOverlay: {
@@ -382,7 +399,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   modal: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.card,
     borderRadius: 24,
     padding: 24,
     width: "100%",
@@ -392,7 +409,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 16,
-    color: "#333",
+    color: colors.text,
   },
   tempInputRow: {
     flexDirection: "row",
@@ -406,14 +423,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     borderBottomWidth: 2,
-    borderBottomColor: "#FF8C42",
+    borderBottomColor: colors.primary,
     minWidth: 140,
     paddingVertical: 6,
-    color: "#333",
+    color: colors.text,
   },
   tempUnit: {
     fontSize: 24,
-    color: "#666",
+    color: colors.textSoft,
   },
   modalButtons: {
     flexDirection: "row",
@@ -426,15 +443,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalButtonSecondary: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#F5EDE0",
   },
   modalButtonSecondaryText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#666",
+    color: colors.textSoft,
   },
   modalButtonPrimary: {
-    backgroundColor: "#FF8C42",
+    backgroundColor: colors.primary,
   },
   modalButtonPrimaryText: {
     fontSize: 16,
