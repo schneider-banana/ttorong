@@ -1,14 +1,16 @@
 // 오늘의 기록 타임라인
-// - 시간순(최신순) 목록, 항목별 삭제 가능
+// - 시간순(최신순) 목록, 항목 탭 → 수정, ✕ → 삭제
+import { useState } from "react";
 import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme";
 import { icons } from "../../icons";
-import type { BabyLogEntry, BabyLogType } from "../../types";
+import type { BabyLogEntry, BabyLogType, LogEntryPatch } from "../../types";
 import {
   formatClockTime,
   formatDuration,
   minutesSince,
 } from "../../hooks/useBabyLog";
+import { EditLogModal } from "./EditLogModal";
 
 interface LogTimelineProps {
   /** 오늘의 기록 (최신순) */
@@ -17,6 +19,8 @@ interface LogTimelineProps {
   loading: boolean;
   /** 삭제 요청 (확인 후 실제 삭제는 호출자) */
   onDelete: (id: string) => void;
+  /** 수정 요청 (실제 저장은 호출자) */
+  onUpdate: (id: string, patch: LogEntryPatch) => void;
 }
 
 /** 로그 종류별 메타 정보 */
@@ -50,7 +54,9 @@ function describeEntry(entry: BabyLogEntry): string {
   }
 }
 
-export function LogTimeline({ entries, loading, onDelete }: LogTimelineProps) {
+export function LogTimeline({ entries, loading, onDelete, onUpdate }: LogTimelineProps) {
+  const [editingEntry, setEditingEntry] = useState<BabyLogEntry | null>(null);
+
   const confirmDelete = (entry: BabyLogEntry) => {
     const label = TYPE_META[entry.type].label;
     Alert.alert("기록 삭제", `${label} 기록(${describeEntry(entry)})을 삭제할까요?`, [
@@ -81,9 +87,14 @@ export function LogTimeline({ entries, loading, onDelete }: LogTimelineProps) {
           {entries.map((entry) => {
             const meta = TYPE_META[entry.type];
             return (
-              <View
+              <Pressable
                 key={entry.id}
-                style={styles.row}
+                style={({ pressed }) => [
+                  styles.row,
+                  pressed && styles.rowPressed,
+                ]}
+                onPress={() => setEditingEntry(entry)}
+                accessibilityLabel={`${meta.label} 기록 수정`}
               >
                 <Image source={{ uri: meta.icon }} style={styles.iconBadge} />
                 <View style={styles.rowText}>
@@ -101,11 +112,17 @@ export function LogTimeline({ entries, loading, onDelete }: LogTimelineProps) {
                 >
                   <Text style={styles.deleteText}>✕</Text>
                 </Pressable>
-              </View>
+              </Pressable>
             );
           })}
         </View>
       )}
+
+      <EditLogModal
+        entry={editingEntry}
+        onClose={() => setEditingEntry(null)}
+        onSave={onUpdate}
+      />
     </View>
   );
 }
@@ -150,6 +167,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 16,
     gap: 12,
+  },
+  rowPressed: {
+    opacity: 0.7,
   },
   iconBadge: {
     width: 48,

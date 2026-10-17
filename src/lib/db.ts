@@ -29,6 +29,7 @@ import {
   deleteDoc,
   where,
   writeBatch,
+  deleteField,
   type DocumentSnapshot,
   type Firestore,
   type QueryDocumentSnapshot,
@@ -40,6 +41,7 @@ import type {
   Child,
   Family,
   GrowthRecord,
+  LogEntryPatch,
   Member,
 } from "../types";
 
@@ -108,6 +110,8 @@ export interface BabyLogDatabase {
   ): Promise<BabyLogEntry[]>;
   /** 로그 1건 등록 */
   createLogEntry(entry: Omit<BabyLogEntry, "id">): Promise<BabyLogEntry>;
+  /** 로그 수정 */
+  updateLogEntry(id: string, patch: LogEntryPatch): Promise<BabyLogEntry>;
   /** 로그 삭제 */
   deleteLogEntry(id: string): Promise<void>;
 
@@ -272,6 +276,24 @@ export class InMemoryDatabase implements BabyLogDatabase {
     const created: BabyLogEntry = { ...entry, id: newId() };
     this.logEntries.set(created.id, created);
     return created;
+  }
+
+  async updateLogEntry(
+    id: string,
+    patch: LogEntryPatch
+  ): Promise<BabyLogEntry> {
+    const existing = this.logEntries.get(id);
+    if (!existing) throw new Error(`로그를 찾을 수 없습니다: ${id}`);
+    const updated: BabyLogEntry = { ...existing };
+    if (patch.startedAt !== undefined) updated.startedAt = patch.startedAt;
+    if (patch.endedAt === null) delete updated.endedAt;
+    else if (patch.endedAt !== undefined) updated.endedAt = patch.endedAt;
+    if (patch.amount === null) delete updated.amount;
+    else if (patch.amount !== undefined) updated.amount = patch.amount;
+    if (patch.note === null) delete updated.note;
+    else if (patch.note !== undefined) updated.note = patch.note;
+    this.logEntries.set(id, updated);
+    return updated;
   }
 
   async deleteLogEntry(id: string): Promise<void> {
@@ -582,6 +604,32 @@ export class FirestoreDatabase implements BabyLogDatabase {
     await deleteDoc(
       doc(this.fs, "families", this.requireFamilyId(), "logEntries", id)
     );
+  }
+
+  async updateLogEntry(
+    id: string,
+    patch: LogEntryPatch
+  ): Promise<BabyLogEntry> {
+    const ref = doc(
+      this.fs,
+      "families",
+      this.requireFamilyId(),
+      "logEntries",
+      id
+    );
+    const data: Record<string, unknown> = {};
+    if (patch.startedAt !== undefined) data.startedAt = patch.startedAt;
+    if (patch.endedAt === null) data.endedAt = deleteField();
+    else if (patch.endedAt !== undefined) data.endedAt = patch.endedAt;
+    if (patch.amount === null) data.amount = deleteField();
+    else if (patch.amount !== undefined) data.amount = patch.amount;
+    if (patch.note === null) data.note = deleteField();
+    else if (patch.note !== undefined) data.note = patch.note;
+    await updateDoc(ref, data);
+    const updated = await getDoc(ref);
+    const result = withId<BabyLogEntry>(updated);
+    if (!result) throw new Error(`로그를 찾을 수 없습니다: ${id}`);
+    return result;
   }
 
   // --- 성장 기록 ---

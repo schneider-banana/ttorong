@@ -98,6 +98,19 @@ export interface BabyLogEntry {
   createdBy: string;
 }
 
+/**
+ * 육아 로그 수정 패치
+ * - endedAt: null → 종료시간 제거 (진행 중으로 되돌림)
+ * - amount: null → 수치 제거
+ * - note: null → 메모 제거
+ */
+export interface LogEntryPatch {
+  startedAt?: string;
+  endedAt?: string | null;
+  amount?: number | null;
+  note?: string | null;
+}
+
 /** 성장 기록 (키/몸무게/머리둘레 측정) */
 export interface GrowthRecord {
   /** 고유 ID */

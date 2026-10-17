@@ -7,7 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDatabase } from "./useDatabase";
 import { useAuth } from "./useAuth";
 import { useCurrentChild } from "./useCurrentChild";
-import type { BabyLogEntry, BabyLogType } from "../types";
+import type { BabyLogEntry, BabyLogType, LogEntryPatch } from "../types";
 
 /** 기저귀 종류: 액션시트에서 소변/대변 선택 */
 export type DiaperKind = "소변" | "대변";
@@ -42,13 +42,13 @@ export function minutesSince(iso: string, now: Date = new Date()): number {
   );
 }
 
-/** 분수를 "○시간 ○분 전" / "○분 전" / "방금 전" 형식으로 표시 */
+/** 분수를 "○시간 ○분" / "○분" / "방금" 형식으로 표시 (호출자가 "전" 등 접미사 추가) */
 export function formatElapsed(minutes: number): string {
-  if (minutes < 1) return "방금 전";
+  if (minutes < 1) return "방금";
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  if (hours === 0) return `${mins}분 전`;
-  return `${hours}시간 ${mins}분 전`;
+  if (hours === 0) return `${mins}분`;
+  return `${hours}시간 ${mins}분`;
 }
 
 /** 분수를 "35분" / "1시간 20분" 형식으로 표시 (진행 중 경과 표기용) */
@@ -84,7 +84,7 @@ interface LogContext {
 export function useBabyLog() {
   const db = useDatabase();
   const { member, loading: authLoading } = useAuth();
-  const { child, loading: childLoading } = useCurrentChild();
+  const { child, loading: childLoading, reload: reloadChild } = useCurrentChild();
   /** 전체 로그 (최신순) */
   const [entries, setEntries] = useState<BabyLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,6 +114,22 @@ export function useBabyLog() {
     const next = await db.listLogEntries(child.id, LIST_LIMIT);
     setEntries(next);
   }, [db, child]);
+
+  /**
+   * 아이 목록 + 로그 전체 새로고침.
+   * 설정에서 아이를 등록한 뒤 홈으로 돌아왔을 때 호출 — 클로저에 갇힌
+   * 오래된 child가 아니라 새로 불러온 목록 기준으로 로그를 갱신한다.
+   */
+  const refreshAll = useCallback(async () => {
+    const list = await reloadChild();
+    const target = list[0] ?? null;
+    if (!target) {
+      setEntries([]);
+      return;
+    }
+    const next = await db.listLogEntries(target.id, LIST_LIMIT);
+    setEntries(next);
+  }, [db, reloadChild]);
 
   /** 세션 확정 후 최초 로딩 (멤버·아이 변경 시에도 다시 로딩) */
   useEffect(() => {
@@ -287,16 +303,25 @@ export function useBabyLog() {
     [db, mutate]
   );
 
+  /** 로그 수정 (시간/수유량/체온/메모 등) */
+  const updateEntry = useCallback(
+    (id: string, patch: LogEntryPatch) =>
+      mutate(() => db.updateLogEntry(id, patch).then(() => undefined)),
+    [db, mutate]
+  );
+
   return {
     entries,
     todayEntries,
     loading,
     refreshing,
     busy,
+    child,
     activeFeeding,
     activeSleep,
     lastFeeding,
     refresh,
+    refreshAll,
     startFeeding,
     endFeeding,
     startSleep,
@@ -304,5 +329,6 @@ export function useBabyLog() {
     logDiaper,
     logTemperature,
     deleteEntry,
+    updateEntry,
   };
 }

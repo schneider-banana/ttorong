@@ -3,6 +3,7 @@
 // - 상단: 컴팩트 헤더 → 상태 요약 카드 → 빠른 기록 한 줄(수유/수면/기저귀/체온+음성)
 // - 세그먼트 [오늘 기록 | 오늘 일정] 전환으로 하나씩만 표시
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFocusEffect } from "expo-router";
 import {
   Alert,
   Pressable,
@@ -23,7 +24,6 @@ import { colors } from "../../src/theme";
 import { useBabyLog, type DiaperKind } from "../../src/hooks/useBabyLog";
 import { useDatabase } from "../../src/hooks/useDatabase";
 import { useAuth } from "../../src/hooks/useAuth";
-import { useCurrentChild } from "../../src/hooks/useCurrentChild";
 import type { CalendarEvent } from "../../src/types";
 
 /** "YYYY-MM-DD" → "10월 17일 (토)" */
@@ -41,15 +41,21 @@ export default function HomeScreen() {
   const log = useBabyLog();
   const db = useDatabase();
   const { member } = useAuth();
-  const { child } = useCurrentChild();
   const today = useMemo(() => todayString(), []);
   const [tab, setTab] = useState<HomeTab>("log");
   const [todayEvents, setTodayEvents] = useState<CalendarEvent[]>([]);
 
+  // 탭 복귀 시 아이 목록부터 새로고침 (설정에서 아이 등록 후 돌아온 경우 반영)
+  useFocusEffect(
+    useCallback(() => {
+      log.refreshAll();
+    }, [log.refreshAll])
+  );
+
   /** 아이 미등록 시 기록 버튼이 조용히 무시되던 문제 → 안내 팝업 */
   const guardChild = useCallback(
     (fn: () => void) => () => {
-      if (!child) {
+      if (!log.child) {
         Alert.alert(
           "아이 등록 필요",
           "기록하려면 설정에서 아이를 먼저 등록해주세요."
@@ -58,7 +64,7 @@ export default function HomeScreen() {
       }
       fn();
     },
-    [child]
+    [log.child]
   );
 
   // 오늘의 가족 일정 불러오기 (로그인 전에는 빈 목록)
@@ -177,6 +183,7 @@ export default function HomeScreen() {
               entries={log.todayEntries}
               loading={log.loading}
               onDelete={log.deleteEntry}
+              onUpdate={log.updateEntry}
             />
           ) : (
             <EventList

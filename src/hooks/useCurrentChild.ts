@@ -19,10 +19,11 @@ export function useCurrentChild() {
   const reload = useCallback(async () => {
     if (!member) {
       setChildren([]);
-      return;
+      return [];
     }
     const list = await db.listChildren(member.familyId);
     setChildren(list);
+    return list;
   }, [db, member]);
 
   // 인증 세션이 확정된 뒤에 목록 로딩 (자동 로딩 실패는 조용히 빈 목록 유지)
