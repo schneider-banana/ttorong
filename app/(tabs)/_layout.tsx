@@ -1,9 +1,39 @@
 // 하단 탭 네비게이션: 홈 / 캘린더 / 기록 / 성장 / 설정
 import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import type { ComponentProps } from "react";
+
+type IconName = ComponentProps<typeof Ionicons>["name"];
+
+/** 탭별 아이콘 (선택됨 / 선택 안 됨) */
+const TAB_ICONS: Record<string, [IconName, IconName]> = {
+  index: ["home", "home-outline"],
+  calendar: ["calendar", "calendar-outline"],
+  log: ["timer", "timer-outline"],
+  growth: ["trending-up", "trending-up-outline"],
+  settings: ["settings", "settings-outline"],
+};
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarIcon: ({ focused, color, size }) => {
+          const [active, inactive] = TAB_ICONS[route.name] ?? [
+            "ellipse",
+            "ellipse-outline",
+          ];
+          return (
+            <Ionicons
+              name={focused ? active : inactive}
+              size={size}
+              color={color}
+            />
+          );
+        },
+      })}
+    >
       <Tabs.Screen name="index" options={{ title: "홈" }} />
       <Tabs.Screen name="calendar" options={{ title: "캘린더" }} />
       <Tabs.Screen name="log" options={{ title: "기록" }} />
