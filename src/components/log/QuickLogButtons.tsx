@@ -6,6 +6,7 @@
 import { useEffect, useState } from "react";
 import {
   Alert,
+  Image,
   Modal,
   Pressable,
   StyleSheet,
@@ -14,6 +15,7 @@ import {
   View,
 } from "react-native";
 import type { BabyLogEntry } from "../../types";
+import { icons } from "../../icons";
 import { colors } from "../../theme";
 import {
   formatDuration,
@@ -78,7 +80,7 @@ export function QuickLogButtons({
   // compact 모드면 한 줄 레이아웃용 스타일로 전환
   const gridStyle = compact ? styles.compactGrid : styles.grid;
   const btnStyle = compact ? styles.compactButton : styles.bigButton;
-  const iconStyle = compact ? styles.compactIcon : styles.icon;
+  const tileStyle = compact ? styles.compactTile : styles.tile;
   const titleStyle = compact ? styles.compactTitle : styles.buttonTitle;
   const subStyle = compact ? styles.compactSub : styles.buttonSub;
 
@@ -105,14 +107,15 @@ export function QuickLogButtons({
         <Pressable
           style={({ pressed }) => [
             btnStyle,
-            styles.kindTintFeeding,
-            feedingActive && styles.activeButton,
             (pressed || disabled) && styles.pressed,
           ]}
           disabled={disabled}
           onPress={feedingActive ? onEndFeeding : onStartFeeding}
         >
-          <Text style={iconStyle}>🍼</Text>
+          <Image
+            source={{ uri: icons.Feeding }}
+            style={[tileStyle, feedingActive && styles.tileActive]}
+          />
           <Text style={[titleStyle, feedingActive && styles.activeText]}>
             {feedingActive ? "수유 종료" : "수유 시작"}
           </Text>
@@ -127,14 +130,15 @@ export function QuickLogButtons({
         <Pressable
           style={({ pressed }) => [
             btnStyle,
-            styles.kindTintSleep,
-            sleepActive && styles.activeButton,
             (pressed || disabled) && styles.pressed,
           ]}
           disabled={disabled}
           onPress={sleepActive ? onEndSleep : onStartSleep}
         >
-          <Text style={iconStyle}>😴</Text>
+          <Image
+            source={{ uri: icons.Sleep }}
+            style={[tileStyle, sleepActive && styles.tileActive]}
+          />
           <Text style={[titleStyle, sleepActive && styles.activeText]}>
             {sleepActive ? "수면 종료" : "수면 시작"}
           </Text>
@@ -147,30 +151,22 @@ export function QuickLogButtons({
 
         {/* 기저귀 */}
         <Pressable
-          style={({ pressed }) => [
-            btnStyle,
-            styles.kindTintDiaper,
-            (pressed || disabled) && styles.pressed,
-          ]}
+          style={({ pressed }) => [btnStyle, (pressed || disabled) && styles.pressed]}
           disabled={disabled}
           onPress={() => setDiaperSheetOpen(true)}
         >
-          <Text style={iconStyle}>🧷</Text>
+          <Image source={{ uri: icons.Diaper }} style={tileStyle} />
           <Text style={titleStyle}>기저귀</Text>
           {!compact && <Text style={subStyle}>탭 한 번에 기록</Text>}
         </Pressable>
 
         {/* 체온 */}
         <Pressable
-          style={({ pressed }) => [
-            btnStyle,
-            styles.kindTintTemperature,
-            (pressed || disabled) && styles.pressed,
-          ]}
+          style={({ pressed }) => [btnStyle, (pressed || disabled) && styles.pressed]}
           disabled={disabled}
           onPress={() => setTempModalOpen(true)}
         >
-          <Text style={iconStyle}>🌡️</Text>
+          <Image source={{ uri: icons.Temp }} style={tileStyle} />
           <Text style={titleStyle}>체온</Text>
           {!compact && <Text style={subStyle}>숫자 입력 후 저장</Text>}
         </Pressable>
@@ -281,16 +277,27 @@ const styles = StyleSheet.create({
   },
   compactButton: {
     flex: 1,
-    minHeight: 78,
+    minHeight: 86,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
+    paddingVertical: 6,
     paddingHorizontal: 2,
+    gap: 5,
   },
-  compactIcon: {
-    fontSize: 24,
-    marginBottom: 4,
+  compactTile: {
+    width: 54,
+    height: 54,
+    borderRadius: 16,
+  },
+  tile: {
+    width: 64,
+    height: 64,
+    borderRadius: 18,
+  },
+  tileActive: {
+    borderWidth: 3,
+    borderColor: colors.primary,
   },
   compactTitle: {
     fontSize: 13,
@@ -311,22 +318,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 18,
     paddingHorizontal: 8,
-  },
-  // 기록 종류별 틴트 배경
-  kindTintFeeding: {
-    backgroundColor: colors.tint.feeding,
-  },
-  kindTintSleep: {
-    backgroundColor: colors.tint.sleep,
-  },
-  kindTintDiaper: {
-    backgroundColor: colors.tint.diaper,
-  },
-  kindTintTemperature: {
-    backgroundColor: colors.tint.temperature,
-  },
-  activeButton: {
-    backgroundColor: colors.primary,
+    gap: 8,
   },
   pressed: {
     opacity: 0.6,
@@ -346,7 +338,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   activeText: {
-    color: "#fff",
+    color: colors.primaryDeep,
   },
   // --- 기저귀 액션시트 ---
   sheetOverlay: {

@@ -5,8 +5,9 @@
 // - 실제 STT는 네이티브 모듈 + dev build가 필요하므로
 //   지금은 MockSpeechRecognitionProvider를 사용 (src/lib/speech.ts 참고).
 import { useEffect, useRef, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme";
+import { icons } from "../../icons";
 import { MockSpeechRecognitionProvider } from "../../lib/speech";
 import {
   describeCommand,
@@ -143,7 +144,7 @@ export function VoiceLogButton({
         onPress={handlePress}
         accessibilityLabel="음성으로 기록"
       >
-        <Text style={styles.compactIcon}>🎙️</Text>
+        <Image source={{ uri: icons.Mic }} style={styles.compactTile} />
       </Pressable>
     );
   }
@@ -158,7 +159,7 @@ export function VoiceLogButton({
       disabled={disabled}
       onPress={handlePress}
     >
-      <Text style={styles.icon}>🎙️</Text>
+      <Image source={{ uri: icons.Mic }} style={styles.tile} />
       <View style={styles.labelWrap}>
         <Text style={[styles.title, listening && styles.listeningText]}>
           {listening ? "듣는 중..." : "음성으로 기록 (mock)"}
@@ -187,17 +188,21 @@ const styles = StyleSheet.create({
   },
   // compact 모드: 빠른 기록 줄의 5번째 버튼 (작은 마이크)
   compactButton: {
-    width: 56,
-    minHeight: 78,
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    width: 66,
+    minHeight: 86,
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: 6,
   },
-  compactIcon: {
-    fontSize: 26,
+  compactTile: {
+    width: 54,
+    height: 54,
+    borderRadius: 16,
+  },
+  tile: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
   },
   listeningButton: {
     borderColor: colors.primary,
