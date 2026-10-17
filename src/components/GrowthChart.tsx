@@ -47,12 +47,15 @@ interface Point {
 export function GrowthChart({
   records,
   birthDate,
+  initialSex,
 }: {
   records: GrowthRecord[];
   birthDate: string | null;
+  /** 아이 성별 (등록 시 선택한 값 — 수동 토글의 초기값) */
+  initialSex?: WhoSex;
 }) {
   const [indicator, setIndicator] = useState<WhoIndicator>("lhfa");
-  const [sex, setSex] = useState<WhoSex>("male");
+  const [sex, setSex] = useState<WhoSex>(initialSex ?? "male");
 
   const curves = useMemo(
     () => getPercentileCurves(indicator, sex),

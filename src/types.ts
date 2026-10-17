@@ -9,6 +9,8 @@ export interface Child {
   name: string;
   /** 생년월일 (YYYY-MM-DD) */
   birthDate: string;
+  /** 성별 (성장 곡선 백분위용, 선택) */
+  gender?: "male" | "female";
   /** 프로필 사진 URL (선택) */
   photoUrl?: string;
 }

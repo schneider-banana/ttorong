@@ -1,7 +1,7 @@
-// 성장 화면: 측정 입력 → 기록 목록(삭제 가능) → PDF 리포트 생성
+// 성장 화면: 측정 입력 → 기록 목록(삭제 가능) → PDF 리포트 생성(프리미엄)
 // - 숫자는 소수점 입력 가능 (decimal-pad)
 // - 저장 버튼은 하나 이상의 측정값이 있을 때만 동작
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -13,12 +13,15 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useFocusEffect } from "expo-router";
 import * as Print from "expo-print";
 import { useCurrentChild } from "../../src/hooks/useCurrentChild";
 import { useGrowth } from "../../src/hooks/useGrowth";
 import { GrowthChart } from "../../src/components/GrowthChart";
+import { PaywallSheet } from "../../src/components/PaywallSheet";
 import { buildGrowthReportHtml } from "../../src/lib/report";
 import { todayString } from "../../src/lib/vaccination";
+import { isPremium } from "../../src/lib/premium";
 import { colors } from "../../src/theme";
 import type { GrowthRecord } from "../../src/types";
 
@@ -51,6 +54,15 @@ export default function GrowthScreen() {
   const [weightText, setWeightText] = useState("");
   const [headText, setHeadText] = useState("");
   const [pdfBusy, setPdfBusy] = useState(false);
+  const [premium, setPremium] = useState(false);
+  const [paywallVisible, setPaywallVisible] = useState(false);
+
+  // 탭 복귀 시 프리미엄 상태 새로고침 (결제 후 돌아온 경우 반영)
+  useFocusEffect(
+    useCallback(() => {
+      void isPremium().then(setPremium);
+    }, [])
+  );
 
   /** 최신순 목록 */
   const latestFirst = [...growth.records].reverse();
@@ -112,9 +124,13 @@ export default function GrowthScreen() {
     );
   };
 
-  /** PDF 리포트 만들기: 아이 정보 + 기록으로 HTML 생성 후 인쇄/공유 */
+  /** PDF 리포트 만들기: 프리미엄 전용. 아이 정보 + 기록으로 HTML 생성 후 인쇄/공유 */
   const handlePdf = async () => {
     if (growth.busy || pdfBusy) return;
+    if (!(await isPremium())) {
+      setPaywallVisible(true);
+      return;
+    }
     if (growth.records.length === 0) {
       Alert.alert(
         "리포트 만들기",
@@ -156,10 +172,12 @@ export default function GrowthScreen() {
       >
         <Text style={styles.title}>성장</Text>
 
-        {/* WHO 성장 곡선 */}
+        {/* WHO 성장 곡선 (아이 성별이 등록돼 있으면 자동 반영) */}
         <GrowthChart
+          key={child?.id ?? "nochild"}
           records={growth.records}
           birthDate={child?.birthDate ?? null}
+          initialSex={child?.gender}
         />
 
         {/* 측정 입력 폼 */}
@@ -243,19 +261,34 @@ export default function GrowthScreen() {
           ))
         )}
 
-        {/* PDF 리포트 */}
+        {/* PDF 리포트 (프리미엄) */}
         <Pressable
           style={[styles.pdfButton, saving && styles.disabled]}
-          onPress={handlePdf}
+          onPress={() => void handlePdf()}
           disabled={saving}
         >
           <Text style={styles.pdfButtonText}>
-            {pdfBusy ? "PDF 만드는 중…" : "PDF 리포트 만들기"}
+            {pdfBusy
+              ? "PDF 만드는 중…"
+              : premium
+                ? "PDF 리포트 만들기"
+                : "🔒 PDF 리포트 만들기 (프리미엄)"}
           </Text>
         </Pressable>
+        {!premium ? (
+          <Text style={styles.premiumHint}>
+            소아과 제출용 성장 리포트는 프리미엄 기능이에요.
+          </Text>
+        ) : null}
 
         <View style={styles.bottomSpace} />
       </ScrollView>
+
+      <PaywallSheet
+        visible={paywallVisible}
+        onClose={() => setPaywallVisible(false)}
+        onUnlocked={() => setPremium(true)}
+      />
     </SafeAreaView>
   );
 }
@@ -375,6 +408,12 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: "center",
     marginTop: 16,
+  },
+  premiumHint: {
+    fontSize: 12,
+    color: colors.textSoft,
+    textAlign: "center",
+    marginTop: 8,
   },
   pdfButtonText: {
     color: "#fff",

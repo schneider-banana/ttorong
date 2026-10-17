@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import { Stack, router, useSegments } from "expo-router";
 import { useAuth } from "../src/hooks/useAuth";
 import { installErrorReporting } from "../src/lib/errorReporting";
+import { configurePurchases } from "../src/lib/purchases";
 
 // 앱에서 발생한 uncaught 에러를 Firestore에 자동 보고 (개발자 확인용)
 installErrorReporting();
+
+// RevenueCat 결제 초기화 (API Key 없으면 목 모드)
+void configurePurchases().catch(() => {});
 
 export default function RootLayout() {
   const { isSignedIn, loading } = useAuth();
