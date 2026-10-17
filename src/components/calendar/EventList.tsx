@@ -2,10 +2,12 @@
 // - 일정 종류별 색상 뱃지
 // - 시작~종료 시간 표시, 담당자·메모 표시
 // - 길게 누르면 삭제 확인 후 삭제
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme";
 import type { CalendarEvent } from "../../types";
 import { EVENT_KIND_META } from "./eventKind";
+import { ConfirmDialog } from "../ConfirmDialog";
 
 interface EventListProps {
   /** 선택된 날짜 (YYYY-MM-DD) */
@@ -42,16 +44,7 @@ export function EventList({
   onDeleteEvent,
   showDateTitle = true,
 }: EventListProps) {
-  const confirmDelete = (event: CalendarEvent) => {
-    Alert.alert("일정 삭제", `「${event.title}」 일정을 삭제할까요?`, [
-      { text: "취소", style: "cancel" },
-      {
-        text: "삭제",
-        style: "destructive",
-        onPress: () => onDeleteEvent(event.id),
-      },
-    ]);
-  };
+  const [deletingEvent, setDeletingEvent] = useState<CalendarEvent | null>(null);
 
   return (
     <View style={styles.container}>
@@ -78,7 +71,7 @@ export function EventList({
             <Pressable
               key={event.id}
               style={[styles.card, { borderLeftColor: meta.color }]}
-              onLongPress={() => confirmDelete(event)}
+              onLongPress={() => setDeletingEvent(event)}
               delayLongPress={500}
             >
               <View style={styles.cardHeader}>
@@ -104,6 +97,19 @@ export function EventList({
       <Text style={styles.deleteHint}>
         일정을 길게 누르면 삭제할 수 있어요
       </Text>
+
+      <ConfirmDialog
+        visible={deletingEvent !== null}
+        title="일정 삭제"
+        message={
+          deletingEvent ? `「${deletingEvent.title}」\n일정을 삭제할까요?` : ""
+        }
+        onCancel={() => setDeletingEvent(null)}
+        onConfirm={() => {
+          if (deletingEvent) onDeleteEvent(deletingEvent.id);
+          setDeletingEvent(null);
+        }}
+      />
     </View>
   );
 }

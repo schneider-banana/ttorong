@@ -1,7 +1,7 @@
 // 오늘의 기록 타임라인
-// - 시간순(최신순) 목록, 항목 탭 → 수정, ✕ → 삭제
+// - 시간순(최신순) 목록, 항목 탭 → 수정, ✕ → 삭제(커스텀 확인 다이얼로그)
 import { useState } from "react";
-import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme";
 import { icons } from "../../icons";
 import type { BabyLogEntry, BabyLogType, LogEntryPatch } from "../../types";
@@ -11,6 +11,7 @@ import {
   minutesSince,
 } from "../../hooks/useBabyLog";
 import { EditLogModal } from "./EditLogModal";
+import { ConfirmDialog } from "../ConfirmDialog";
 
 interface LogTimelineProps {
   /** 오늘의 기록 (최신순) */
@@ -56,18 +57,7 @@ function describeEntry(entry: BabyLogEntry): string {
 
 export function LogTimeline({ entries, loading, onDelete, onUpdate }: LogTimelineProps) {
   const [editingEntry, setEditingEntry] = useState<BabyLogEntry | null>(null);
-
-  const confirmDelete = (entry: BabyLogEntry) => {
-    const label = TYPE_META[entry.type].label;
-    Alert.alert("기록 삭제", `${label} 기록(${describeEntry(entry)})을 삭제할까요?`, [
-      { text: "취소", style: "cancel" },
-      {
-        text: "삭제",
-        style: "destructive",
-        onPress: () => onDelete(entry.id),
-      },
-    ]);
-  };
+  const [deletingEntry, setDeletingEntry] = useState<BabyLogEntry | null>(null);
 
   return (
     <View>
@@ -106,7 +96,7 @@ export function LogTimeline({ entries, loading, onDelete, onUpdate }: LogTimelin
                     styles.deleteButton,
                     pressed && styles.pressed,
                   ]}
-                  onPress={() => confirmDelete(entry)}
+                  onPress={() => setDeletingEntry(entry)}
                   hitSlop={12}
                   accessibilityLabel={`${meta.label} 기록 삭제`}
                 >
@@ -122,6 +112,21 @@ export function LogTimeline({ entries, loading, onDelete, onUpdate }: LogTimelin
         entry={editingEntry}
         onClose={() => setEditingEntry(null)}
         onSave={onUpdate}
+      />
+
+      <ConfirmDialog
+        visible={deletingEntry !== null}
+        title="기록 삭제"
+        message={
+          deletingEntry
+            ? `${TYPE_META[deletingEntry.type].label} 기록\n(${describeEntry(deletingEntry)})\n삭제할까요?`
+            : ""
+        }
+        onCancel={() => setDeletingEntry(null)}
+        onConfirm={() => {
+          if (deletingEntry) onDelete(deletingEntry.id);
+          setDeletingEntry(null);
+        }}
       />
     </View>
   );
