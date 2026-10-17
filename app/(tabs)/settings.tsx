@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { PlaceholderScreen } from "../../src/components/PlaceholderScreen";
+import { colors } from "../../src/theme";
 import { useDatabase } from "../../src/hooks/useDatabase";
 import { useCurrentChild } from "../../src/hooks/useCurrentChild";
 import { useAuth } from "../../src/hooks/useAuth";
@@ -171,25 +172,26 @@ const styles = StyleSheet.create({
   childBox: {
     width: "100%",
     marginTop: 24,
-    backgroundColor: "#F8F9FA",
+    backgroundColor: "#FDF8F0",
     borderRadius: 12,
     padding: 16,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 12,
   },
   emptyText: {
     fontSize: 14,
-    color: "#868E96",
+    color: colors.textSoft,
     marginBottom: 12,
   },
   childRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.card,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -198,23 +200,25 @@ const styles = StyleSheet.create({
   childName: {
     fontSize: 15,
     fontWeight: "600",
+    color: colors.text,
   },
   childBirth: {
     fontSize: 14,
-    color: "#868E96",
+    color: colors.textSoft,
   },
   input: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.card,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#DEE2E6",
+    borderColor: colors.border,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 15,
+    color: colors.text,
     marginBottom: 8,
   },
   addButton: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: "center",
@@ -228,13 +232,13 @@ const styles = StyleSheet.create({
   inviteBox: {
     width: "100%",
     marginTop: 16,
-    backgroundColor: "#FFF9E6",
+    backgroundColor: "#FFF6EA",
     borderRadius: 12,
     padding: 16,
   },
   inviteHint: {
     fontSize: 13,
-    color: "#868E96",
+    color: colors.textSoft,
     marginBottom: 10,
   },
   inviteRow: {
@@ -246,9 +250,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "800",
     letterSpacing: 4,
+    color: colors.text,
   },
   copyButton: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 10,
@@ -262,18 +267,19 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 16,
     alignItems: "center",
-    backgroundColor: "#F1F3F5",
+    backgroundColor: "#F5EDE0",
     borderRadius: 12,
     paddingHorizontal: 20,
     paddingVertical: 14,
   },
   modeLabel: {
     fontSize: 12,
-    color: "#868E96",
+    color: colors.textSoft,
     marginBottom: 4,
   },
   modeValue: {
     fontSize: 15,
     fontWeight: "600",
+    color: colors.text,
   },
 });

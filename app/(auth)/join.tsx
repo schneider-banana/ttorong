@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { colors } from "../../src/theme";
 import { useAuth } from "../../src/hooks/useAuth";
 import { INVITE_CODE_LENGTH } from "../../src/lib/auth";
 
@@ -93,29 +94,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 28,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
+    color: colors.text,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSoft,
     textAlign: "center",
     marginBottom: 32,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
+    color: colors.text,
     marginTop: 12,
     marginBottom: 6,
   },
   codeInput: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.border,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -123,19 +126,23 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: 4,
     textAlign: "center",
+    color: colors.text,
+    backgroundColor: colors.card,
     marginBottom: 4,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.border,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
+    color: colors.text,
+    backgroundColor: colors.card,
     marginBottom: 4,
   },
   error: {
-    color: "#d33",
+    color: colors.danger,
     fontSize: 14,
     marginTop: 12,
     lineHeight: 20,
@@ -147,7 +154,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   primaryButton: {
-    backgroundColor: "#4a7cfb",
+    backgroundColor: colors.primary,
   },
   primaryButtonText: {
     color: "#fff",
@@ -160,7 +167,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   backLinkText: {
-    color: "#888",
+    color: colors.textSoft,
     fontSize: 14,
   },
 });

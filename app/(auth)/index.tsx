@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import * as Clipboard from "expo-clipboard";
+import { colors } from "../../src/theme";
 import { useAuth } from "../../src/hooks/useAuth";
 
 /** 이 화면 내부의 단계 */
@@ -148,17 +149,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     paddingHorizontal: 28,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 32,
     fontWeight: "700",
     textAlign: "center",
+    color: colors.text,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSoft,
     textAlign: "center",
     marginBottom: 40,
   },
@@ -171,16 +173,19 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
+    color: colors.text,
     marginTop: 12,
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.border,
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 16,
+    color: colors.text,
+    backgroundColor: colors.card,
     marginBottom: 4,
   },
   button: {
@@ -190,7 +195,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   primaryButton: {
-    backgroundColor: "#4a7cfb",
+    backgroundColor: colors.primary,
   },
   primaryButtonText: {
     color: "#fff",
@@ -198,10 +203,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   secondaryButton: {
-    backgroundColor: "#f0f3fa",
+    backgroundColor: colors.primarySoft,
   },
   secondaryButtonText: {
-    color: "#4a7cfb",
+    color: colors.primary,
     fontSize: 16,
     fontWeight: "700",
   },
@@ -211,7 +216,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   backLinkText: {
-    color: "#888",
+    color: colors.textSoft,
     fontSize: 14,
   },
   codeBox: {
@@ -220,17 +225,18 @@ const styles = StyleSheet.create({
   codeTitle: {
     fontSize: 18,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 8,
   },
   codeHelp: {
     fontSize: 14,
-    color: "#666",
+    color: colors.textSoft,
     textAlign: "center",
     lineHeight: 20,
     marginBottom: 24,
   },
   codeCard: {
-    backgroundColor: "#f0f3fa",
+    backgroundColor: colors.primarySoft,
     borderRadius: 16,
     paddingVertical: 28,
     paddingHorizontal: 48,
@@ -240,6 +246,6 @@ const styles = StyleSheet.create({
     fontSize: 44,
     fontWeight: "800",
     letterSpacing: 8,
-    color: "#1a1a1a",
+    color: colors.text,
   },
 });

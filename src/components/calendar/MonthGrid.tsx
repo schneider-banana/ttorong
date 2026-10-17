@@ -4,6 +4,7 @@
 // - 날짜마다 종류별 색상 점(dot)으로 일정 존재 표시 (최대 4개)
 // - 이전/다음 달 날짜는 회색으로 표시, 탭하면 해당 월로 이동
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { colors } from "../../theme";
 import type { CalendarEvent } from "../../types";
 import { EVENT_KIND_META, toDateString } from "./eventKind";
 
@@ -178,6 +179,7 @@ const styles = StyleSheet.create({
   monthTitle: {
     fontSize: 18,
     fontWeight: "700",
+    color: colors.text,
   },
   monthButton: {
     paddingHorizontal: 16,
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
   },
   monthButtonText: {
     fontSize: 28,
-    color: "#2563eb",
+    color: colors.primary,
     fontWeight: "600",
   },
   weekRow: {
@@ -200,7 +202,7 @@ const styles = StyleSheet.create({
   weekday: {
     fontSize: 13,
     fontWeight: "600",
-    color: "#6b7280",
+    color: colors.textSoft,
   },
   sunday: {
     color: "#dc2626",
@@ -214,13 +216,13 @@ const styles = StyleSheet.create({
   },
   dayText: {
     fontSize: 15,
-    color: "#111827",
+    color: colors.text,
   },
   outsideMonthText: {
-    color: "#d1d5db",
+    color: colors.inactive,
   },
   selectedCircle: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
   },
   selectedText: {
     color: "#ffffff",
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
   },
   todayCircle: {
     borderWidth: 1.5,
-    borderColor: "#2563eb",
+    borderColor: colors.primary,
   },
   dotRow: {
     flexDirection: "row",

@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import type { CalendarEvent, CalendarEventKind } from "../../types";
+import { colors } from "../../theme";
 import {
   EVENT_KIND_META,
   EVENT_KIND_ORDER,
@@ -83,7 +84,7 @@ export function EventForm({ initialDate, onSubmit, onCancel }: EventFormProps) {
         value={title}
         onChangeText={setTitle}
         placeholder="예: 독감 예방접종"
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor={colors.inactive}
         returnKeyType="next"
       />
 
@@ -94,7 +95,7 @@ export function EventForm({ initialDate, onSubmit, onCancel }: EventFormProps) {
         value={date}
         onChangeText={setDate}
         placeholder="YYYY-MM-DD (예: 2026-10-20)"
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor={colors.inactive}
         keyboardType="numbers-and-punctuation"
       />
 
@@ -107,7 +108,7 @@ export function EventForm({ initialDate, onSubmit, onCancel }: EventFormProps) {
             value={startTime}
             onChangeText={setStartTime}
             placeholder="09:30"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.inactive}
             keyboardType="numbers-and-punctuation"
           />
         </View>
@@ -118,7 +119,7 @@ export function EventForm({ initialDate, onSubmit, onCancel }: EventFormProps) {
             value={endTime}
             onChangeText={setEndTime}
             placeholder="10:30"
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.inactive}
             keyboardType="numbers-and-punctuation"
           />
         </View>
@@ -165,7 +166,7 @@ export function EventForm({ initialDate, onSubmit, onCancel }: EventFormProps) {
         value={assignee}
         onChangeText={setAssignee}
         placeholder="예: 엄마 (선택)"
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor={colors.inactive}
       />
 
       {/* 메모 */}
@@ -175,7 +176,7 @@ export function EventForm({ initialDate, onSubmit, onCancel }: EventFormProps) {
         value={memo}
         onChangeText={setMemo}
         placeholder="추가 메모 (선택)"
-        placeholderTextColor="#9ca3af"
+        placeholderTextColor={colors.inactive}
         multiline
         numberOfLines={3}
         textAlignVertical="top"
@@ -205,22 +206,24 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 16,
+    color: colors.text,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#374151",
+    color: colors.text,
     marginTop: 12,
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: colors.border,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 15,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.card,
+    color: colors.text,
   },
   row: {
     flexDirection: "row",
@@ -238,11 +241,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1.5,
-    borderColor: "#e5e7eb",
+    borderColor: colors.border,
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.card,
   },
   kindDot: {
     width: 10,
@@ -252,7 +255,7 @@ const styles = StyleSheet.create({
   },
   kindLabel: {
     fontSize: 14,
-    color: "#4b5563",
+    color: colors.textSoft,
   },
   memoInput: {
     minHeight: 72,
@@ -270,15 +273,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cancelButton: {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#F5EDE0",
   },
   saveButton: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
   },
   cancelText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#4b5563",
+    color: colors.textSoft,
   },
   saveText: {
     fontSize: 16,

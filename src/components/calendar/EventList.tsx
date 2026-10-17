@@ -3,6 +3,7 @@
 // - 시작~종료 시간 표시, 담당자·메모 표시
 // - 길게 누르면 삭제 확인 후 삭제
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { colors } from "../../theme";
 import type { CalendarEvent } from "../../types";
 import { EVENT_KIND_META } from "./eventKind";
 
@@ -115,26 +116,29 @@ const styles = StyleSheet.create({
   dateTitle: {
     fontSize: 16,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 12,
   },
   emptyBox: {
     alignItems: "center",
     paddingVertical: 32,
-    backgroundColor: "#f9fafb",
+    backgroundColor: "#FFF6EA",
     borderRadius: 12,
   },
   emptyText: {
     fontSize: 15,
-    color: "#6b7280",
+    color: colors.textSoft,
   },
   emptyHint: {
     fontSize: 13,
-    color: "#9ca3af",
+    color: colors.textSoft,
     marginTop: 6,
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: colors.card,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderLeftWidth: 4,
     padding: 14,
     marginBottom: 10,
@@ -162,26 +166,26 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 13,
-    color: "#6b7280",
+    color: colors.textSoft,
   },
   titleText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#111827",
+    color: colors.text,
   },
   subText: {
     fontSize: 13,
-    color: "#6b7280",
+    color: colors.textSoft,
     marginTop: 4,
   },
   memoText: {
     fontSize: 13,
-    color: "#4b5563",
+    color: colors.textSoft,
     marginTop: 4,
   },
   deleteHint: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: colors.textSoft,
     textAlign: "center",
     marginTop: 8,
   },

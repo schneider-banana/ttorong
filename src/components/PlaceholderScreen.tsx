@@ -1,6 +1,7 @@
 // "준비 중" 플레이스홀더 화면 (각 탭의 뼈대 UI)
 import type { ReactNode } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { colors } from "../theme";
 
 interface PlaceholderScreenProps {
   /** 화면 제목 */
@@ -33,16 +34,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
     paddingHorizontal: 32,
   },
   title: {
     fontSize: 28,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 12,
   },
   badge: {
-    backgroundColor: "#FFF3CD",
+    backgroundColor: colors.primarySoft,
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 6,
@@ -51,11 +53,11 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#856404",
+    color: colors.primaryDeep,
   },
   description: {
     fontSize: 15,
-    color: "#666",
+    color: colors.textSoft,
     textAlign: "center",
     lineHeight: 22,
   },

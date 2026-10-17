@@ -18,6 +18,7 @@ import { useCurrentChild } from "../../src/hooks/useCurrentChild";
 import { useGrowth } from "../../src/hooks/useGrowth";
 import { buildGrowthReportHtml } from "../../src/lib/report";
 import { todayString } from "../../src/lib/vaccination";
+import { colors } from "../../src/theme";
 import type { GrowthRecord } from "../../src/types";
 
 /** 측정일 형식 검증 (YYYY-MM-DD) */
@@ -255,7 +256,7 @@ export default function GrowthScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: colors.background,
   },
   scroll: {
     flex: 1,
@@ -266,11 +267,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 16,
   },
   card: {
+    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: "#e5e5e5",
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 16,
     marginBottom: 20,
@@ -278,20 +281,23 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 17,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 12,
   },
   label: {
     fontSize: 13,
-    color: "#555",
+    color: colors.textSoft,
     marginBottom: 4,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: 16,
+    color: colors.text,
+    backgroundColor: colors.card,
     marginBottom: 12,
   },
   row: {
@@ -302,7 +308,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saveButton: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.primary,
     borderRadius: 10,
     paddingVertical: 13,
     alignItems: "center",
@@ -316,18 +322,20 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: "700",
+    color: colors.text,
     marginBottom: 10,
   },
   hint: {
     fontSize: 14,
-    color: "#888",
+    color: colors.textSoft,
     marginBottom: 16,
   },
   recordRow: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: "#eee",
+    borderColor: colors.border,
     borderRadius: 10,
     padding: 12,
     marginBottom: 8,
@@ -338,23 +346,24 @@ const styles = StyleSheet.create({
   recordDate: {
     fontSize: 15,
     fontWeight: "600",
+    color: colors.text,
     marginBottom: 2,
   },
   recordSummary: {
     fontSize: 13,
-    color: "#555",
+    color: colors.textSoft,
   },
   deleteButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
   deleteButtonText: {
-    color: "#dc2626",
+    color: colors.danger,
     fontSize: 14,
     fontWeight: "600",
   },
   pdfButton: {
-    backgroundColor: "#111827",
+    backgroundColor: "#332E29",
     borderRadius: 10,
     paddingVertical: 14,
     alignItems: "center",
