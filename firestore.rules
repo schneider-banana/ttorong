@@ -1,0 +1,90 @@
+// 또롱이 Firestore 보안 규칙
+// ==========================
+// 콘솔 적용 방법: Firebase 콘솔 > Firestore Database > 규칙 탭에
+// 아래 내용을 그대로 붙여넣고 "게시"를 누르세요.
+//
+// 설계 원칙:
+// - 멤버 문서 ID = Firebase Auth uid (앱 코드와 일치)
+// - 가족 문서의 memberIds 배열에 본인 uid가 있어야 해당 가족 데이터 접근 가능
+// - 초대코드는 inviteCodes/{코드} 매핑으로만 조회 (families 목록 조회 금지 —
+//   목록 조회가 열리면 누구나 전체 가족의 초대코드를 열거할 수 있음)
+//
+// 데이터 구조:
+//   families/{familyId}                — { name, inviteCode, memberIds: string[] }
+//   families/{familyId}/children/{id}  — 아이
+//   families/{familyId}/events/{id}    — 일정
+//   families/{familyId}/logEntries/{id} — 육아 로그
+//   families/{familyId}/growthRecords/{id} — 성장 기록
+//   members/{uid}                      — { displayName, role, familyId }
+//   inviteCodes/{code}                 — { familyId, familyName }
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 로그인한 사용자인지
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // 해당 가족의 멤버인지 (families 문서의 memberIds에 본인 uid 포함)
+    function isFamilyMember(familyId) {
+      return signedIn()
+        && request.auth.uid in get(
+          /databases/$(database)/documents/families/$(familyId)
+        ).data.memberIds;
+    }
+
+    // ---- 초대코드 매핑 ----
+    match /inviteCodes/{code} {
+      // 코드는 알아야 조회 가능. list 금기로 코드 열거 차단.
+      allow get: if signedIn();
+      allow list: if false;
+      // 가족 생성 시 앱이 함께 기록 (배치 쓰기)
+      allow create: if signedIn();
+      allow update, delete: if false;
+    }
+
+    // ---- 가족 ----
+    match /families/{familyId} {
+      // 단일 조회: 멤버만 (합류 전에는 inviteCodes 경유)
+      allow get: if isFamilyMember(familyId);
+      // 목록 조회 금지: 전체 가족 열거 차단
+      allow list: if false;
+      // 생성: 로그인 사용자 (앱이 생성자를 memberIds에 포함시킴)
+      allow create: if signedIn();
+      // 수정: 멤버만. 단, 합류(join)를 위해 본인 uid를 memberIds에
+      // 추가하는 변경은 멤버가 아니어도 허용 (다른 필드는 건드릴 수 없음)
+      allow update: if isFamilyMember(familyId)
+        || (
+          signedIn()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['memberIds'])
+          && request.resource.data.memberIds.hasAll(resource.data.memberIds)
+          && request.auth.uid in request.resource.data.memberIds
+        );
+      allow delete: if false;
+
+      // ---- 서브컬렉션: 전부 가족 멤버만 ----
+      match /children/{childId} {
+        allow read, write: if isFamilyMember(familyId);
+      }
+      match /events/{eventId} {
+        allow read, write: if isFamilyMember(familyId);
+      }
+      match /logEntries/{entryId} {
+        allow read, write: if isFamilyMember(familyId);
+      }
+      match /growthRecords/{growthId} {
+        allow read, write: if isFamilyMember(familyId);
+      }
+    }
+
+    // ---- 멤버 (문서 ID = Auth uid) ----
+    match /members/{memberId} {
+      // 본인 문서만 읽기/생성/수정
+      allow get, create, update: if signedIn() && request.auth.uid == memberId;
+      allow list, delete: if false;
+    }
+  }
+}
