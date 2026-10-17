@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { colors } from "../../theme";
 import type { BabyLogType } from "../../types";
+import { TimeField } from "./TimeField";
 
 export interface LogFormData {
   startedAt: string; // ISO
@@ -158,32 +159,22 @@ export function LogEntryForm({
 
   return (
     <View>
-      {/* 시작 시간 */}
-      <Text style={styles.label}>시작 시간</Text>
-      <TextInput
-        style={styles.input}
+      <TimeField
+        label="시작 시간"
         value={startTime}
-        onChangeText={setStartTime}
-        keyboardType="numbers-and-punctuation"
-        placeholder="14:30"
-        placeholderTextColor={colors.inactive}
-        maxLength={5}
+        onChange={setStartTime}
       />
 
       {/* 종료 시간 (수유/수면) */}
       {(type === "feeding" || type === "sleep") && (
-        <>
-          <Text style={styles.label}>종료 시간 (비우면 진행 중)</Text>
-          <TextInput
-            style={styles.input}
-            value={endTime}
-            onChangeText={setEndTime}
-            keyboardType="numbers-and-punctuation"
-            placeholder="진행 중"
-            placeholderTextColor={colors.inactive}
-            maxLength={5}
-          />
-        </>
+        <TimeField
+          label="종료 시간"
+          value={endTime}
+          placeholder="진행 중"
+          fallback={startTime}
+          onChange={setEndTime}
+          onClear={() => setEndTime("")}
+        />
       )}
 
       {/* 수유량 */}
