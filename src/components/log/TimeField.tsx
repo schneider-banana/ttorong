@@ -25,14 +25,8 @@ interface TimeFieldProps {
   showQuick?: boolean;
 }
 
-/** 빠른 선택 프리셋 */
-const QUICK_OFFSETS = [
-  { label: "지금", minutes: 0 },
-  { label: "5분 전", minutes: 5 },
-  { label: "15분 전", minutes: 15 },
-  { label: "30분 전", minutes: 30 },
-  { label: "1시간 전", minutes: 60 },
-];
+/** 스테퍼: 누를 때마다 표시된 시간에서 N분씩 뺌 */
+const STEP_MINUTES = [1, 5, 10];
 
 /** "HH:MM" → Date (오늘 날짜 기준) */
 function hhmmToDate(hhmm: string): Date {
@@ -78,9 +72,10 @@ export function TimeField({
     }
   };
 
-  /** 빠른 선택: N분 전을 현재 시각 기준으로 입력 */
-  const applyQuick = (minutes: number) => {
-    onChange(dateToHHMM(new Date(Date.now() - minutes * 60000)));
+  /** 스테퍼: 현재 표시된 시간에서 N분 뺌 (여러 번 누르면 누적) */
+  const stepBack = (minutes: number) => {
+    const base = value ? hhmmToDate(value) : new Date();
+    onChange(dateToHHMM(new Date(base.getTime() - minutes * 60000)));
   };
 
   return (
@@ -113,16 +108,16 @@ export function TimeField({
       </View>
       {showQuick && (
         <View style={styles.chipsRow}>
-          {QUICK_OFFSETS.map((q) => (
+          {STEP_MINUTES.map((m) => (
             <Pressable
-              key={q.label}
+              key={m}
               style={({ pressed }) => [
                 styles.chip,
                 pressed && styles.pressed,
               ]}
-              onPress={() => applyQuick(q.minutes)}
+              onPress={() => stepBack(m)}
             >
-              <Text style={styles.chipText}>{q.label}</Text>
+              <Text style={styles.chipText}>-{m}분</Text>
             </Pressable>
           ))}
         </View>
