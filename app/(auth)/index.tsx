@@ -59,7 +59,7 @@ export default function AuthStartScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>👶 베이비로그</Text>
+      <Text style={styles.title}>👶 또롱이</Text>
       <Text style={styles.subtitle}>가족과 함께 쓰는 육아 기록</Text>
 
       {step === "start" && (

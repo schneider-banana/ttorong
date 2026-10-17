@@ -199,15 +199,7 @@ export default function CalendarScreen() {
 
         <View style={styles.divider} />
 
-        <EventList
-          date={selectedDate}
-          events={selectedEvents}
-          onDeleteEvent={handleDelete}
-        />
-
-        <View style={styles.divider} />
-
-        {/* 다가오는 예방접종 */}
+        {/* 다가오는 예방접종 (핵심 기능이라 상단에 배치) */}
         <View style={styles.vaxSection}>
           <Text style={styles.sectionTitle}>다가오는 예방접종</Text>
           {child ? (
@@ -259,6 +251,14 @@ export default function CalendarScreen() {
             </Text>
           )}
         </View>
+
+        <View style={styles.divider} />
+
+        <EventList
+          date={selectedDate}
+          events={selectedEvents}
+          onDeleteEvent={handleDelete}
+        />
 
         {loading ? <Text style={styles.loadingText}>불러오는 중…</Text> : null}
       </ScrollView>
