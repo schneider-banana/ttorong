@@ -11,7 +11,9 @@ import {
   minutesSince,
 } from "../../hooks/useBabyLog";
 import { EditLogModal } from "./EditLogModal";
+import { AddLogSheet } from "./AddLogSheet";
 import { ConfirmDialog } from "../ConfirmDialog";
+import type { LogFormData } from "./LogEntryForm";
 
 interface LogTimelineProps {
   /** 오늘의 기록 (최신순) */
@@ -22,6 +24,8 @@ interface LogTimelineProps {
   onDelete: (id: string) => void;
   /** 수정 요청 (실제 저장은 호출자) */
   onUpdate: (id: string, patch: LogEntryPatch) => void;
+  /** 직접 추가 요청 (실제 저장은 호출자) */
+  onAdd: (type: BabyLogType, data: LogFormData) => void;
 }
 
 /** 로그 종류별 메타 정보 */
@@ -55,13 +59,26 @@ function describeEntry(entry: BabyLogEntry): string {
   }
 }
 
-export function LogTimeline({ entries, loading, onDelete, onUpdate }: LogTimelineProps) {
+export function LogTimeline({ entries, loading, onDelete, onUpdate, onAdd }: LogTimelineProps) {
   const [editingEntry, setEditingEntry] = useState<BabyLogEntry | null>(null);
   const [deletingEntry, setDeletingEntry] = useState<BabyLogEntry | null>(null);
+  const [addOpen, setAddOpen] = useState(false);
 
   return (
     <View>
-      <Text style={styles.sectionTitle}>오늘의 기록</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.sectionTitle}>오늘의 기록</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.addButton,
+            pressed && styles.pressed,
+          ]}
+          onPress={() => setAddOpen(true)}
+          accessibilityLabel="기록 직접 추가"
+        >
+          <Text style={styles.addButtonText}>＋</Text>
+        </Pressable>
+      </View>
 
       {loading ? (
         <View style={styles.centerBox}>
@@ -128,6 +145,12 @@ export function LogTimeline({ entries, loading, onDelete, onUpdate }: LogTimelin
           setDeletingEntry(null);
         }}
       />
+
+      <AddLogSheet
+        visible={addOpen}
+        onClose={() => setAddOpen(false)}
+        onSave={onAdd}
+      />
     </View>
   );
 }
@@ -137,7 +160,28 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: "700",
     color: colors.text,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 12,
+  },
+  addButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.primarySoft,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addButtonText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: colors.primaryDeep,
+    marginTop: -2,
   },
   centerBox: {
     paddingVertical: 32,

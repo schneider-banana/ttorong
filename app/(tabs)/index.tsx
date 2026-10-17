@@ -22,9 +22,10 @@ import { EventList } from "../../src/components/calendar/EventList";
 import { todayString } from "../../src/components/calendar/eventKind";
 import { colors } from "../../src/theme";
 import { useBabyLog, type DiaperKind } from "../../src/hooks/useBabyLog";
+import type { LogFormData } from "../../src/components/log/LogEntryForm";
 import { useDatabase } from "../../src/hooks/useDatabase";
 import { useAuth } from "../../src/hooks/useAuth";
-import type { CalendarEvent } from "../../src/types";
+import type { BabyLogType, CalendarEvent } from "../../src/types";
 
 /** "YYYY-MM-DD" → "10월 17일 (토)" */
 function formatDateLabel(date: string): string {
@@ -105,6 +106,16 @@ export default function HomeScreen() {
     onEndSleep: guardChild(log.endSleep),
     onLogDiaper: (kind: DiaperKind) => guardChild(() => log.logDiaper(kind))(),
     onLogTemperature: (v: number) => guardChild(() => log.logTemperature(v))(),
+    onAddEntry: (type: BabyLogType, data: LogFormData) =>
+      guardChild(() =>
+        log.addEntry({
+          type,
+          startedAt: data.startedAt,
+          ...(data.endedAt ? { endedAt: data.endedAt } : {}),
+          ...(data.amount != null ? { amount: data.amount } : {}),
+          ...(data.note ? { note: data.note } : {}),
+        })
+      )(),
   };
 
   return (
@@ -184,6 +195,7 @@ export default function HomeScreen() {
               loading={log.loading}
               onDelete={log.deleteEntry}
               onUpdate={log.updateEntry}
+              onAdd={logActions.onAddEntry}
             />
           ) : (
             <EventList

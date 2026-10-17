@@ -303,6 +303,33 @@ export function useBabyLog() {
     [db, mutate]
   );
 
+  /** 로그 직접 추가 (과거 시간 입력용) */
+  const addEntry = useCallback(
+    (entry: {
+      type: BabyLogType;
+      startedAt: string;
+      endedAt?: string;
+      amount?: number;
+      note?: string;
+    }) => {
+      if (!logContext) return Promise.resolve();
+      const base = logContext;
+      return mutate(() =>
+        db
+          .createLogEntry({
+            ...base,
+            type: entry.type,
+            startedAt: entry.startedAt,
+            ...(entry.endedAt ? { endedAt: entry.endedAt } : {}),
+            ...(entry.amount != null ? { amount: entry.amount } : {}),
+            ...(entry.note ? { note: entry.note } : {}),
+          })
+          .then(() => undefined)
+      );
+    },
+    [db, logContext, mutate]
+  );
+
   /** 로그 수정 (시간/수유량/체온/메모 등) */
   const updateEntry = useCallback(
     (id: string, patch: LogEntryPatch) =>
@@ -330,5 +357,6 @@ export function useBabyLog() {
     logTemperature,
     deleteEntry,
     updateEntry,
+    addEntry,
   };
 }
