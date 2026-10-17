@@ -1,7 +1,8 @@
 // 오늘의 기록 타임라인
 // - 시간순(최신순) 목록, 항목별 삭제 가능
-import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme";
+import { icons } from "../../icons";
 import type { BabyLogEntry, BabyLogType } from "../../types";
 import {
   formatClockTime,
@@ -19,11 +20,11 @@ interface LogTimelineProps {
 }
 
 /** 로그 종류별 메타 정보 */
-const TYPE_META: Record<BabyLogType, { icon: string; label: string; color: string }> = {
-  feeding: { icon: "🍼", label: "수유", color: colors.tint.feeding },
-  sleep: { icon: "😴", label: "수면", color: colors.tint.sleep },
-  diaper: { icon: "🧷", label: "기저귀", color: colors.tint.diaper },
-  temperature: { icon: "🌡️", label: "체온", color: colors.tint.temperature },
+const TYPE_META: Record<BabyLogType, { icon: string; label: string }> = {
+  feeding: { icon: icons.Feeding, label: "수유" },
+  sleep: { icon: icons.Sleep, label: "수면" },
+  diaper: { icon: icons.Diaper, label: "기저귀" },
+  temperature: { icon: icons.Temp, label: "체온" },
 };
 
 /** 항목별 상세 문구 (예: "오전 8:30 · 35분간", "소변", "36.5℃") */
@@ -78,9 +79,7 @@ export function LogTimeline({ entries, loading, onDelete }: LogTimelineProps) {
                 key={entry.id}
                 style={styles.row}
               >
-                <View style={[styles.iconBadge, { backgroundColor: meta.color }]}>
-                  <Text style={styles.rowIcon}>{meta.icon}</Text>
-                </View>
+                <Image source={{ uri: meta.icon }} style={styles.iconBadge} />
                 <View style={styles.rowText}>
                   <Text style={styles.rowLabel}>{meta.label}</Text>
                   <Text style={styles.rowDetail}>{describeEntry(entry)}</Text>
@@ -149,12 +148,7 @@ const styles = StyleSheet.create({
   iconBadge: {
     width: 48,
     height: 48,
-    borderRadius: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rowIcon: {
-    fontSize: 26,
+    borderRadius: 14,
   },
   rowText: {
     flex: 1,

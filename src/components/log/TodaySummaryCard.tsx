@@ -2,8 +2,9 @@
 // - "마지막 수유 ○시간 ○분 전" + "오늘 기록 N건"을 한 줄에 압축 표시
 // - 1분마다 경과시간 자동 갱신
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { colors } from "../../theme";
+import { icons } from "../../icons";
 import type { BabyLogEntry } from "../../types";
 import {
   feedingReferenceTime,
@@ -41,7 +42,7 @@ export function TodaySummaryCard({
 
   return (
     <View style={styles.card}>
-      <Text style={styles.icon}>🍼</Text>
+      <Image source={{ uri: icons.Feeding }} style={styles.icon} />
       <Text style={styles.feedingText} numberOfLines={1}>
         {feedingText}
       </Text>
@@ -66,7 +67,9 @@ const styles = StyleSheet.create({
     minHeight: 64,
   },
   icon: {
-    fontSize: 26,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     marginRight: 10,
   },
   feedingText: {

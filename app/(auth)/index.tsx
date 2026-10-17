@@ -5,6 +5,7 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -14,6 +15,7 @@ import {
 import { router } from "expo-router";
 import * as Clipboard from "expo-clipboard";
 import { colors } from "../../src/theme";
+import { icons } from "../../src/icons";
 import { useAuth } from "../../src/hooks/useAuth";
 
 /** 이 화면 내부의 단계 */
@@ -60,7 +62,8 @@ export default function AuthStartScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>👶 또롱이</Text>
+      <Image source={{ uri: icons.Mascot }} style={styles.mascot} />
+      <Text style={styles.title}>또롱이</Text>
       <Text style={styles.subtitle}>가족과 함께 쓰는 육아 기록</Text>
 
       {step === "start" && (
@@ -150,6 +153,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 28,
     backgroundColor: colors.background,
+  },
+  mascot: {
+    width: 96,
+    height: 96,
+    borderRadius: 28,
+    marginBottom: 16,
   },
   title: {
     fontSize: 32,
