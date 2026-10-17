@@ -60,6 +60,8 @@ export interface BabyLogDatabase {
   // --- 가족 ---
   /** 초대코드로 가족 조회 (없으면 null) */
   getFamilyByInviteCode(inviteCode: string): Promise<Family | null>;
+  /** 가족 ID로 가족 조회 (없으면 null) */
+  getFamily(id: string): Promise<Family | null>;
   /**
    * 초대코드 해석 → { familyId, familyName } (없으면 null).
    * 합류 전에는 가족 문서를 읽을 권한이 없으므로, 초대코드 매핑만으로
@@ -180,6 +182,10 @@ export class InMemoryDatabase implements BabyLogDatabase {
       if (family.inviteCode === inviteCode) return family;
     }
     return null;
+  }
+
+  async getFamily(id: string): Promise<Family | null> {
+    return this.families.get(id) ?? null;
   }
 
   async resolveInviteCode(
@@ -426,6 +432,11 @@ export class FirestoreDatabase implements BabyLogDatabase {
     if (!codeSnap.exists()) return null;
     const { familyId } = codeSnap.data() as { familyId: string };
     const famSnap = await getDoc(this.familyRef(familyId));
+    return withId<Family>(famSnap);
+  }
+
+  async getFamily(id: string): Promise<Family | null> {
+    const famSnap = await getDoc(this.familyRef(id));
     return withId<Family>(famSnap);
   }
 

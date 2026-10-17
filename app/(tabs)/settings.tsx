@@ -1,5 +1,5 @@
 // 설정 화면 (데이터 연결 모드 표시 + 아이 관리 포함)
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -8,9 +8,11 @@ import {
   TextInput,
   View,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { PlaceholderScreen } from "../../src/components/PlaceholderScreen";
 import { useDatabase } from "../../src/hooks/useDatabase";
 import { useCurrentChild } from "../../src/hooks/useCurrentChild";
+import { useAuth } from "../../src/hooks/useAuth";
 import { firebaseMode } from "../../src/lib/firebase";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -27,9 +29,38 @@ function isValidDateString(value: string): boolean {
 
 export default function SettingsScreen() {
   const db = useDatabase();
+  const { member } = useAuth();
   const { children, reload: reloadChildren } = useCurrentChild();
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
+  const [inviteCode, setInviteCode] = useState<string | null>(null);
+
+  // 내 가족의 초대코드를 불러옵니다 (가족 초대용)
+  useEffect(() => {
+    const familyId = member?.familyId;
+    if (!familyId) {
+      setInviteCode(null);
+      return;
+    }
+    let cancelled = false;
+    db.getFamily(familyId)
+      .then((family) => {
+        if (!cancelled) setInviteCode(family?.inviteCode ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setInviteCode(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [db, member?.familyId]);
+
+  /** 초대코드를 클립보드에 복사 */
+  const handleCopyInviteCode = async () => {
+    if (!inviteCode) return;
+    await Clipboard.setStringAsync(inviteCode);
+    Alert.alert("복사됨", "초대코드가 클립보드에 복사됐어요.");
+  };
 
   // 아이 목록은 useCurrentChild가 자동으로 불러옵니다.
   // (불러오기 실패 시 빈 목록 표시 — 조용히 대기)
@@ -103,6 +134,26 @@ export default function SettingsScreen() {
         </Pressable>
       </View>
 
+      {/* 가족 초대코드 */}
+      {inviteCode ? (
+        <View style={styles.inviteBox}>
+          <Text style={styles.sectionTitle}>가족 초대코드</Text>
+          <Text style={styles.inviteHint}>
+            가족을 초대할 때 이 코드를 알려주세요.
+          </Text>
+          <View style={styles.inviteRow}>
+            <Text style={styles.inviteCode}>{inviteCode}</Text>
+            <Pressable
+              style={styles.copyButton}
+              onPress={() => void handleCopyInviteCode()}
+              accessibilityLabel="초대코드 복사"
+            >
+              <Text style={styles.copyButtonText}>복사</Text>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
+
       <View style={styles.modeBox}>
         <Text style={styles.modeLabel}>데이터 모드</Text>
         <Text style={styles.modeValue}>
@@ -172,6 +223,39 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "#FFFFFF",
     fontSize: 15,
+    fontWeight: "600",
+  },
+  inviteBox: {
+    width: "100%",
+    marginTop: 16,
+    backgroundColor: "#FFF9E6",
+    borderRadius: 12,
+    padding: 16,
+  },
+  inviteHint: {
+    fontSize: 13,
+    color: "#868E96",
+    marginBottom: 10,
+  },
+  inviteRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  inviteCode: {
+    fontSize: 22,
+    fontWeight: "800",
+    letterSpacing: 4,
+  },
+  copyButton: {
+    backgroundColor: "#2563eb",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  copyButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
     fontWeight: "600",
   },
   modeBox: {
