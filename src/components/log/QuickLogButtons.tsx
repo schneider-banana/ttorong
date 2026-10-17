@@ -17,6 +17,7 @@ import {
 import type { BabyLogEntry } from "../../types";
 import { icons } from "../../icons";
 import { colors } from "../../theme";
+import { BottomSheet } from "../BottomSheet";
 import {
   formatDuration,
   minutesSince,
@@ -202,42 +203,35 @@ export function QuickLogButtons({
       </View>
 
       {/* 기저귀 액션시트: 소변/대변 선택 */}
-      <Modal
+      <BottomSheet
         visible={diaperSheetOpen}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setDiaperSheetOpen(false)}
+        onClose={() => setDiaperSheetOpen(false)}
       >
-        <Pressable
-          style={styles.sheetOverlay}
-          onPress={() => setDiaperSheetOpen(false)}
-        >
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>기저귀 기록</Text>
-            {(["소변", "대변"] as DiaperKind[]).map((kind) => (
-              <Pressable
-                key={kind}
-                style={({ pressed }) => [
-                  styles.sheetOption,
-                  pressed && styles.pressed,
-                ]}
-                onPress={() => handleDiaperSelect(kind)}
-              >
-                <Text style={styles.sheetOptionText}>{kind}</Text>
-              </Pressable>
-            ))}
+        <Text style={styles.sheetTitle}>기저귀 기록</Text>
+        <View style={styles.sheetOptions}>
+          {(["소변", "대변"] as DiaperKind[]).map((kind) => (
             <Pressable
+              key={kind}
               style={({ pressed }) => [
-                styles.sheetCancel,
+                styles.sheetOption,
                 pressed && styles.pressed,
               ]}
-              onPress={() => setDiaperSheetOpen(false)}
+              onPress={() => handleDiaperSelect(kind)}
             >
-              <Text style={styles.sheetCancelText}>취소</Text>
+              <Text style={styles.sheetOptionText}>{kind}</Text>
             </Pressable>
-          </View>
-        </Pressable>
-      </Modal>
+          ))}
+          <Pressable
+            style={({ pressed }) => [
+              styles.sheetCancel,
+              pressed && styles.pressed,
+            ]}
+            onPress={() => setDiaperSheetOpen(false)}
+          >
+            <Text style={styles.sheetCancelText}>취소</Text>
+          </Pressable>
+        </View>
+      </BottomSheet>
 
       {/* 수유량 입력 모달 (수유 종료 시) */}
       <Modal
@@ -423,25 +417,15 @@ const styles = StyleSheet.create({
     color: colors.primaryDeep,
   },
   // --- 기저귀 액션시트 ---
-  sheetOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "flex-end",
-  },
-  sheet: {
-    backgroundColor: colors.card,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    paddingBottom: 32,
-    gap: 10,
-  },
   sheetTitle: {
     fontSize: 17,
     fontWeight: "700",
     textAlign: "center",
     marginBottom: 6,
     color: colors.text,
+  },
+  sheetOptions: {
+    gap: 10,
   },
   sheetOption: {
     backgroundColor: "#F5EDE0",
