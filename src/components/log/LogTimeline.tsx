@@ -27,11 +27,17 @@ const TYPE_META: Record<BabyLogType, { icon: string; label: string }> = {
   temperature: { icon: icons.Temp, label: "체온" },
 };
 
-/** 항목별 상세 문구 (예: "오전 8:30 · 35분간", "소변", "36.5℃") */
+/** 항목별 상세 문구 (예: "오전 8:30 · 35분간 · 120ml", "소변", "36.5℃") */
 function describeEntry(entry: BabyLogEntry): string {
   const start = formatClockTime(entry.startedAt);
   switch (entry.type) {
-    case "feeding":
+    case "feeding": {
+      const amount = entry.amount != null ? ` · ${entry.amount}ml` : "";
+      if (entry.endedAt) {
+        return `${start} · ${formatDuration(minutesSince(entry.startedAt, new Date(entry.endedAt)))}간${amount}`;
+      }
+      return `${start} · 진행 중`;
+    }
     case "sleep":
       if (entry.endedAt) {
         return `${start} · ${formatDuration(minutesSince(entry.startedAt, new Date(entry.endedAt)))}간`;

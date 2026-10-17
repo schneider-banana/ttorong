@@ -33,7 +33,7 @@ interface QuickLogButtonsProps {
   /** true면 한 줄 컴팩트 레이아웃 (홈 상단 고정 영역용) */
   compact?: boolean;
   onStartFeeding: () => void;
-  onEndFeeding: () => void;
+  onEndFeeding: (amountMl?: number) => void;
   onStartSleep: () => void;
   onEndSleep: () => void;
   onLogDiaper: (kind: DiaperKind) => void;
@@ -73,6 +73,8 @@ export function QuickLogButtons({
   const [diaperSheetOpen, setDiaperSheetOpen] = useState(false);
   const [tempModalOpen, setTempModalOpen] = useState(false);
   const [tempInput, setTempInput] = useState("");
+  const [milkModalOpen, setMilkModalOpen] = useState(false);
+  const [milkInput, setMilkInput] = useState("");
 
   const feedingActive = activeFeeding !== null;
   const sleepActive = activeSleep !== null;
@@ -100,6 +102,33 @@ export function QuickLogButtons({
     onLogTemperature(value);
   };
 
+  /** 수유량 입력값 검증: 0~1000ml 범위의 숫자 (빈 값이면 undefined) */
+  const parseMilk = (raw: string): number | undefined | null => {
+    const trimmed = raw.trim();
+    if (trimmed === "") return undefined;
+    const value = parseFloat(trimmed);
+    if (Number.isNaN(value) || value < 0 || value > 1000) return null;
+    return Math.round(value);
+  };
+
+  /** 수유 종료: 수유량 입력 모달을 먼저 보여줌 */
+  const handleFeedingEndPress = () => {
+    setMilkInput("");
+    setMilkModalOpen(true);
+  };
+
+  /** 수유량 저장 (입력 없으면 건너뛰기로 기록) */
+  const handleMilkSave = () => {
+    const value = parseMilk(milkInput);
+    if (value === null) {
+      Alert.alert("입력 확인", "수유량을 올바르게 입력해 주세요. (예: 120)");
+      return;
+    }
+    setMilkModalOpen(false);
+    setMilkInput("");
+    onEndFeeding(value);
+  };
+
   return (
     <View>
       <View style={gridStyle}>
@@ -110,7 +139,7 @@ export function QuickLogButtons({
             (pressed || disabled) && styles.pressed,
           ]}
           disabled={disabled}
-          onPress={feedingActive ? onEndFeeding : onStartFeeding}
+          onPress={feedingActive ? handleFeedingEndPress : onStartFeeding}
         >
           <Image
             source={{ uri: icons.Feeding }}
@@ -208,6 +237,59 @@ export function QuickLogButtons({
             </Pressable>
           </View>
         </Pressable>
+      </Modal>
+
+      {/* 수유량 입력 모달 (수유 종료 시) */}
+      <Modal
+        visible={milkModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setMilkModalOpen(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modal}>
+            <Text style={styles.modalTitle}>수유량 기록</Text>
+            <View style={styles.tempInputRow}>
+              <TextInput
+                style={styles.tempInput}
+                value={milkInput}
+                onChangeText={setMilkInput}
+                keyboardType="decimal-pad"
+                placeholder="120"
+                placeholderTextColor={colors.inactive}
+                autoFocus
+                returnKeyType="done"
+                onSubmitEditing={handleMilkSave}
+              />
+              <Text style={styles.tempUnit}>ml</Text>
+            </View>
+            <Text style={styles.milkHint}>
+              모유 수유면 비워두고 저장하세요
+            </Text>
+            <View style={styles.modalButtons}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.modalButton,
+                  styles.modalButtonSecondary,
+                  pressed && styles.pressed,
+                ]}
+                onPress={() => setMilkModalOpen(false)}
+              >
+                <Text style={styles.modalButtonSecondaryText}>취소</Text>
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.modalButton,
+                  styles.modalButtonPrimary,
+                  pressed && styles.pressed,
+                ]}
+                onPress={handleMilkSave}
+              >
+                <Text style={styles.modalButtonPrimaryText}>저장</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
       </Modal>
 
       {/* 체온 입력 모달 */}
@@ -423,6 +505,12 @@ const styles = StyleSheet.create({
   tempUnit: {
     fontSize: 24,
     color: colors.textSoft,
+  },
+  milkHint: {
+    fontSize: 13,
+    color: colors.textSoft,
+    textAlign: "center",
+    marginBottom: 16,
   },
   modalButtons: {
     flexDirection: "row",

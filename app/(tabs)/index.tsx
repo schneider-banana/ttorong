@@ -4,6 +4,7 @@
 // - 세그먼트 [오늘 기록 | 오늘 일정] 전환으로 하나씩만 표시
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Pressable,
   RefreshControl,
   SafeAreaView,
@@ -19,9 +20,10 @@ import { VoiceLogButton } from "../../src/components/log/VoiceLogButton";
 import { EventList } from "../../src/components/calendar/EventList";
 import { todayString } from "../../src/components/calendar/eventKind";
 import { colors } from "../../src/theme";
-import { useBabyLog } from "../../src/hooks/useBabyLog";
+import { useBabyLog, type DiaperKind } from "../../src/hooks/useBabyLog";
 import { useDatabase } from "../../src/hooks/useDatabase";
 import { useAuth } from "../../src/hooks/useAuth";
+import { useCurrentChild } from "../../src/hooks/useCurrentChild";
 import type { CalendarEvent } from "../../src/types";
 
 /** "YYYY-MM-DD" → "10월 17일 (토)" */
@@ -39,9 +41,25 @@ export default function HomeScreen() {
   const log = useBabyLog();
   const db = useDatabase();
   const { member } = useAuth();
+  const { child } = useCurrentChild();
   const today = useMemo(() => todayString(), []);
   const [tab, setTab] = useState<HomeTab>("log");
   const [todayEvents, setTodayEvents] = useState<CalendarEvent[]>([]);
+
+  /** 아이 미등록 시 기록 버튼이 조용히 무시되던 문제 → 안내 팝업 */
+  const guardChild = useCallback(
+    (fn: () => void) => () => {
+      if (!child) {
+        Alert.alert(
+          "아이 등록 필요",
+          "기록하려면 설정에서 아이를 먼저 등록해주세요."
+        );
+        return;
+      }
+      fn();
+    },
+    [child]
+  );
 
   // 오늘의 가족 일정 불러오기 (로그인 전에는 빈 목록)
   const loadTodayEvents = useCallback(async () => {
@@ -75,12 +93,12 @@ export default function HomeScreen() {
   }, [log, loadTodayEvents]);
 
   const logActions = {
-    onStartFeeding: log.startFeeding,
-    onEndFeeding: log.endFeeding,
-    onStartSleep: log.startSleep,
-    onEndSleep: log.endSleep,
-    onLogDiaper: log.logDiaper,
-    onLogTemperature: log.logTemperature,
+    onStartFeeding: guardChild(log.startFeeding),
+    onEndFeeding: (ml?: number) => guardChild(() => log.endFeeding(ml))(),
+    onStartSleep: guardChild(log.startSleep),
+    onEndSleep: guardChild(log.endSleep),
+    onLogDiaper: (kind: DiaperKind) => guardChild(() => log.logDiaper(kind))(),
+    onLogTemperature: (v: number) => guardChild(() => log.logTemperature(v))(),
   };
 
   return (

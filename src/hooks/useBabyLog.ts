@@ -194,7 +194,7 @@ export function useBabyLog() {
    * 수유 종료: 진행 중 로그를 삭제하고 시작~종료가 완결된 한 쌍 로그로 교체.
    * (db 인터페이스에 update가 없어 delete+create로 처리)
    */
-  const endFeeding = useCallback(() => {
+  const endFeeding = useCallback((amountMl?: number) => {
     const active = findActive(entries, "feeding");
     if (!active || !logContext) return Promise.resolve();
     const base = logContext;
@@ -205,6 +205,7 @@ export function useBabyLog() {
         startedAt: active.startedAt,
         endedAt: new Date().toISOString(),
         note: active.note,
+        ...(amountMl != null ? { amount: amountMl } : {}),
       });
       await db.deleteLogEntry(active.id);
     });
