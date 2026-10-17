@@ -25,8 +25,8 @@ interface TimeFieldProps {
   showQuick?: boolean;
 }
 
-/** 스테퍼: 누를 때마다 표시된 시간에서 N분씩 더하고 뺌 */
-const STEP_MINUTES = [-10, -5, -1, 1, 5, 10];
+/** 스테퍼: 누를 때마다 표시된 시간에서 N분씩 더하고 뺌 (한 줄에 5개) */
+const STEP_MINUTES = [-10, -5, -1, 1, 5];
 
 /** "HH:MM" → Date (오늘 날짜 기준) */
 function hhmmToDate(hhmm: string): Date {
@@ -196,12 +196,12 @@ const styles = StyleSheet.create({
   },
   chipsRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
     gap: 8,
     marginTop: 8,
   },
   chip: {
-    paddingHorizontal: 14,
+    flex: 1,
+    alignItems: "center",
     paddingVertical: 8,
     borderRadius: 999,
     backgroundColor: colors.primarySoft,
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   chipText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
     color: colors.primaryDeep,
   },
