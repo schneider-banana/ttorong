@@ -2,6 +2,7 @@
 import { useCallback, useState } from "react";
 import {
   Alert,
+  Linking,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -24,6 +25,9 @@ import { isMockMode, restorePurchases } from "../../src/lib/purchases";
 import type { Child } from "../../src/types";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+// TODO: 실제 이메일로 교체
+const SUPPORT_EMAIL = "YOUR_EMAIL_HERE";
 
 /** "YYYY-MM-DD" 형식이 실제 존재하는 날짜인지 검사 */
 function isValidDateString(value: string): boolean {
@@ -141,6 +145,12 @@ export default function SettingsScreen() {
   };
 
   const atChildLimit = children.length >= FREE_CHILD_LIMIT && !premium;
+
+  /** 의견 보내기: 이메일 앱 열기 */
+  const handleFeedback = () => {
+    const subject = encodeURIComponent("또롱이 의견");
+    void Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=${subject}`);
+  };
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -296,6 +306,21 @@ export default function SettingsScreen() {
               ? "인메모리 mock (Firebase 키 없음)"
               : "Firebase 연결됨"}
           </Text>
+        </View>
+
+        {/* 의견 보내기 */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>의견 보내기</Text>
+          <Text style={styles.hintText}>
+            불편한 점이나 개선 아이디어가 있으면 알려주세요.
+          </Text>
+          <Pressable
+            style={styles.secondaryButton}
+            onPress={handleFeedback}
+            accessibilityLabel="의견 보내기"
+          >
+            <Text style={styles.secondaryButtonText}>의견 보내기</Text>
+          </Pressable>
         </View>
 
         <View style={styles.bottomSpace} />
