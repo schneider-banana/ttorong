@@ -17,6 +17,7 @@ import {
 import { LogTimeline } from "../../src/components/log/LogTimeline";
 import { QuickLogButtons } from "../../src/components/log/QuickLogButtons";
 import { TodaySummaryCard } from "../../src/components/log/TodaySummaryCard";
+import { NapPredictCard } from "../../src/components/log/NapPredictCard";
 import { VoiceLogButton } from "../../src/components/log/VoiceLogButton";
 import { EventList } from "../../src/components/calendar/EventList";
 import { todayString } from "../../src/components/calendar/eventKind";
@@ -129,6 +130,12 @@ export default function HomeScreen() {
 
         {/* 2. 상태 요약 카드: 마지막 수유 + 오늘 통계 */}
         <TodaySummaryCard entries={log.todayEntries} />
+
+        {/* 2-1. 다음 낮잠 예측 (수면 기록 기반) */}
+        <NapPredictCard
+          child={log.child}
+          sleeps={log.entries.filter((e) => e.type === "sleep")}
+        />
 
         {/* 3. 빠른 기록 한 줄: 수유/수면/기저귀/체온 + 음성 마이크 */}
         <View style={styles.quickRow}>

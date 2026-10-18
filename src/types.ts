@@ -132,3 +132,15 @@ export interface GrowthRecord {
   /** 메모 (선택) */
   note?: string;
 }
+
+/**
+ * 발달 마일스톤 달성 기록 (아이당 1문서)
+ * - 문서 ID = childId (families/{familyId}/milestones/{childId})
+ * - achieved: 마일스톤 ID → 달성일 (YYYY-MM-DD)
+ */
+export interface MilestoneRecord {
+  /** 대상 아이 ID (문서 ID와 동일) */
+  childId: string;
+  /** 마일스톤 ID → 달성일 */
+  achieved: Record<string, string>;
+}

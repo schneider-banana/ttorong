@@ -1,7 +1,7 @@
 // 성장 화면: 측정 입력 → 기록 목록(삭제 가능) → PDF 리포트 생성(프리미엄)
 // - 숫자는 소수점 입력 가능 (decimal-pad)
 // - 저장 버튼은 하나 이상의 측정값이 있을 때만 동작
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -17,13 +17,16 @@ import { useFocusEffect } from "expo-router";
 import * as Print from "expo-print";
 import { useCurrentChild } from "../../src/hooks/useCurrentChild";
 import { useGrowth } from "../../src/hooks/useGrowth";
+import { useDatabase } from "../../src/hooks/useDatabase";
 import { GrowthChart } from "../../src/components/GrowthChart";
+import { SleepChart } from "../../src/components/SleepChart";
+import { MilestoneSection } from "../../src/components/MilestoneSection";
 import { PaywallSheet } from "../../src/components/PaywallSheet";
 import { buildGrowthReportHtml } from "../../src/lib/report";
 import { todayString } from "../../src/lib/vaccination";
 import { isPremium } from "../../src/lib/premium";
 import { colors } from "../../src/theme";
-import type { GrowthRecord } from "../../src/types";
+import type { BabyLogEntry, GrowthRecord } from "../../src/types";
 
 /** 측정일 형식 검증 (YYYY-MM-DD) */
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -48,6 +51,7 @@ function summarize(record: GrowthRecord): string {
 export default function GrowthScreen() {
   const growth = useGrowth();
   const { child } = useCurrentChild();
+  const db = useDatabase();
 
   const [measuredDate, setMeasuredDate] = useState(() => todayString());
   const [heightText, setHeightText] = useState("");
@@ -56,12 +60,20 @@ export default function GrowthScreen() {
   const [pdfBusy, setPdfBusy] = useState(false);
   const [premium, setPremium] = useState(false);
   const [paywallVisible, setPaywallVisible] = useState(false);
+  const [sleeps, setSleeps] = useState<BabyLogEntry[]>([]);
 
-  // 탭 복귀 시 프리미엄 상태 새로고침 (결제 후 돌아온 경우 반영)
+  // 탭 복귀 시 프리미엄 상태 + 수면 로그 새로고침
   useFocusEffect(
     useCallback(() => {
       void isPremium().then(setPremium);
-    }, [])
+      if (child) {
+        db.listLogEntries(child.id, 200)
+          .then((list) => setSleeps(list.filter((e) => e.type === "sleep")))
+          .catch(() => setSleeps([]));
+      } else {
+        setSleeps([]);
+      }
+    }, [db, child?.id])
   );
 
   /** 최신순 목록 */
@@ -179,6 +191,12 @@ export default function GrowthScreen() {
           birthDate={child?.birthDate ?? null}
           initialSex={child?.gender}
         />
+
+        {/* 주간 수면 패턴 */}
+        <SleepChart sleeps={sleeps} />
+
+        {/* 발달 마일스톤 */}
+        <MilestoneSection child={child} />
 
         {/* 측정 입력 폼 */}
         <View style={styles.card}>

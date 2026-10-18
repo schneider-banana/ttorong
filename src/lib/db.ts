@@ -43,6 +43,7 @@ import type {
   GrowthRecord,
   LogEntryPatch,
   Member,
+  MilestoneRecord,
 } from "../types";
 
 /** 앱 전체 데이터 접근 인터페이스 */
@@ -127,6 +128,16 @@ export interface BabyLogDatabase {
   ): Promise<GrowthRecord>;
   /** 성장 기록 삭제 */
   deleteGrowthRecord(id: string): Promise<void>;
+
+  // --- 발달 마일스톤 ---
+  /** 아이의 마일스톤 달성 기록 조회 (없으면 빈 achieved) */
+  getMilestones(childId: string): Promise<MilestoneRecord>;
+  /** 마일스톤 달성/취소 (achievedDate가 null이면 취소) */
+  setMilestone(
+    childId: string,
+    milestoneId: string,
+    achievedDate: string | null
+  ): Promise<MilestoneRecord>;
 
   /**
    * 현재 세션의 가족 ID 설정 (Firestore 구현체 전용).
@@ -321,6 +332,27 @@ export class InMemoryDatabase implements BabyLogDatabase {
   async deleteGrowthRecord(id: string): Promise<void> {
     this.growthRecords.delete(id);
   }
+
+  // --- 발달 마일스톤 (아이당 1문서, 메모리 Map에 childId 키로 저장) ---
+  private milestones = new Map<string, MilestoneRecord>();
+
+  async getMilestones(childId: string): Promise<MilestoneRecord> {
+    return this.milestones.get(childId) ?? { childId, achieved: {} };
+  }
+
+  async setMilestone(
+    childId: string,
+    milestoneId: string,
+    achievedDate: string | null
+  ): Promise<MilestoneRecord> {
+    const current = await this.getMilestones(childId);
+    const achieved = { ...current.achieved };
+    if (achievedDate === null) delete achieved[milestoneId];
+    else achieved[milestoneId] = achievedDate;
+    const updated: MilestoneRecord = { childId, achieved };
+    this.milestones.set(childId, updated);
+    return updated;
+  }
 }
 
 /** 문서 데이터에서 id 필드를 제거 (id는 문서 ID로 사용하므로 본문에 저장하지 않음) */
@@ -409,6 +441,10 @@ export class FirestoreDatabase implements BabyLogDatabase {
 
   private growthRecordsCol(familyId: string) {
     return collection(this.fs, "families", familyId, "growthRecords");
+  }
+
+  private milestonesCol(familyId: string) {
+    return collection(this.fs, "families", familyId, "milestones");
   }
 
   private membersCol() {
@@ -664,6 +700,45 @@ export class FirestoreDatabase implements BabyLogDatabase {
     await deleteDoc(
       doc(this.fs, "families", this.requireFamilyId(), "growthRecords", id)
     );
+  }
+
+  // --- 발달 마일스톤 (문서 ID = childId, achieved 맵에 달성일 저장) ---
+
+  async getMilestones(childId: string): Promise<MilestoneRecord> {
+    const snap = await getDoc(
+      doc(this.fs, "families", this.requireFamilyId(), "milestones", childId)
+    );
+    if (!snap.exists()) return { childId, achieved: {} };
+    const data = snap.data() as { achieved?: Record<string, string> };
+    return { childId, achieved: data.achieved ?? {} };
+  }
+
+  async setMilestone(
+    childId: string,
+    milestoneId: string,
+    achievedDate: string | null
+  ): Promise<MilestoneRecord> {
+    const ref = doc(
+      this.fs,
+      "families",
+      this.requireFamilyId(),
+      "milestones",
+      childId
+    );
+    if (achievedDate === null) {
+      await setDoc(
+        ref,
+        { [`achieved.${milestoneId}`]: deleteField() },
+        { merge: true }
+      );
+    } else {
+      await setDoc(
+        ref,
+        { childId, achieved: { [milestoneId]: achievedDate } },
+        { merge: true }
+      );
+    }
+    return this.getMilestones(childId);
   }
 }
 

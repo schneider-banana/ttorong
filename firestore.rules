@@ -15,6 +15,7 @@
 //   families/{familyId}/events/{id}    — 일정
 //   families/{familyId}/logEntries/{id} — 육아 로그
 //   families/{familyId}/growthRecords/{id} — 성장 기록
+//   families/{familyId}/milestones/{childId} — 발달 마일스톤 (문서 ID = 아이 ID)
 //   members/{uid}                      — { displayName, role, familyId }
 //   inviteCodes/{code}                 — { familyId, familyName }
 
@@ -76,6 +77,9 @@ service cloud.firestore {
         allow read, write: if isFamilyMember(familyId);
       }
       match /growthRecords/{growthId} {
+        allow read, write: if isFamilyMember(familyId);
+      }
+      match /milestones/{childId} {
         allow read, write: if isFamilyMember(familyId);
       }
     }
