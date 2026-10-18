@@ -27,7 +27,7 @@ import type { Child } from "../../src/types";
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 // TODO: 실제 이메일로 교체
-const SUPPORT_EMAIL = "YOUR_EMAIL_HERE";
+const SUPPORT_EMAIL = "schneider.banana@gmail.com";
 
 /** "YYYY-MM-DD" 형식이 실제 존재하는 날짜인지 검사 */
 function isValidDateString(value: string): boolean {
